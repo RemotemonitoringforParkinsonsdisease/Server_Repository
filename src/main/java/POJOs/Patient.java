@@ -7,7 +7,7 @@ public class Patient {
     private Integer patientId;
     private String fullName;
     private LocalDate dob;
-    private Integer doctorId;
+    private Doctor doctor;
     private Set <Report> reports;
     private User user;
 
@@ -33,11 +33,11 @@ public class Patient {
     public void setDob(LocalDate dob) {
         this.dob = dob;
     }
-    public Integer getDoctorId() {
-        return doctorId;
+    public Doctor getDoctor() {
+        return doctor;
     }
-    public void setDoctorId(int doctorId) {
-        this.doctorId = doctorId;
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
     public Set <Report> getReports() {
         return reports;
