@@ -3,7 +3,7 @@ package POJOs;
 public class User {
     private String email;
     private String password; //TODO: Encriptar
-    private String role; //TODO: Enum
+    private String role;
     private Integer userId;
     //Yo haría que Patient y Doctor hereden de User, así no hay que andar pasando User como atributo
     public User(String email, String password, String role) {
