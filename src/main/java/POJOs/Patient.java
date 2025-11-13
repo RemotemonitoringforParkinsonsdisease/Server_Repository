@@ -1,6 +1,7 @@
 package POJOs;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Patient extends User {
@@ -9,8 +10,11 @@ public class Patient extends User {
     private LocalDate dob;
     private Set <Report> reports;
 
-    public Patient(String email, String password, String fullName, LocalDate dob) {
+    public Patient(String email, String password, String fullName, LocalDate dob, Doctor doctor, Set<Report> reports) {
         super(email, fullName);
         this.dob = dob;
+        this.password = password;
+        this.reports = reports;
+        this.doctor = doctor;
     }
 }
