@@ -16,7 +16,7 @@ public class ManagerJDBC {
     //CONSTRUCTOR
     public ManagerJDBC() {
         try {
-            //Open DDBB connection
+            //Open DDBB connection<
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:./db/ParkinsonTelemonitoringDDBB.db");
             c.createStatement().execute("PRAGMA foreign_keys=ON");
@@ -44,7 +44,17 @@ public class ManagerJDBC {
         }
     }
 
-    private void createTables() {
+    private void createTables() throws SQLException{
+
+        Statement stmt = c.createStatement();
+
+        String createUsersTable = "CREATE TABLE IF NOT EXISTS Users ("
+                + "id VARCHAR(20) PRIMARY KEY, "
+                + "email VARCHAR(255) NOT NULL UNIQUE, "
+                + "full_name VARCHAR(255) NOT NULL, "
+                + "password VARCHAR(255) NOT NULL"
+                + ");";
+        stmt.executeUpdate(createUsersTable);
 
     }
 
