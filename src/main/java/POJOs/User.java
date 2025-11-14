@@ -10,24 +10,22 @@ public class User {
     private String email;
     private String fullName;
 
-    public User(String email, String fullName) {
+    public User(String email, String fullName, String letter) {
         this.email = email;
         this.fullName = fullName;
-        this.id = createId();
+        this.id = createId(letter);
         idList.add(id);
     }
 
-    private String createId(){
-        String identifier = "P";
+    private String createId(String letter) {
         final int idLength = 9;
         for (int i = 0; i < idLength; i++) {
             Random rand = new Random();
-            identifier += rand.nextInt(10);
+            letter += rand.nextInt(10);
         }
-        if(idList.contains(identifier)){
-            return createId();
+        if(idList.contains(letter)){
+            return createId("" + letter.charAt(0));
         }
-        return identifier;
+        return letter;
     }
-
 }
