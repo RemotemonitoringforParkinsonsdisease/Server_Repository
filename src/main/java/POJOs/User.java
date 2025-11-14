@@ -1,5 +1,8 @@
 package POJOs;
 
+import manageData.ReceiveDataViaNetwork;
+import manageData.SendDataViaNetwork;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,4 +32,9 @@ public class User {
         }
         return letter;
     }
+
+   /* private String getRandomDoctorId(ReceiveDataViaNetwork receiveDataViaNetwork, SendDataViaNetwork sendDataViaNetwork) {
+        Random rand = new Random();
+        return idList.get(rand.nextInt(idList.size()));
+    }*/
 }
