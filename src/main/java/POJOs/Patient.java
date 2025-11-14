@@ -17,4 +17,11 @@ public class Patient extends User {
         this.reports = reports;
         this.doctor = doctor;
     }
+
+    //Constructor para REGISTRARSE
+    public Patient(String email, String fullName, LocalDate dob,  String password, String letter) {
+        super(email, fullName, letter);
+        this.dob = dob;
+        this.password = password;
+    }
 }

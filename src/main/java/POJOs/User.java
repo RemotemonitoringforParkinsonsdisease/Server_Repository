@@ -10,6 +10,7 @@ public class User {
     private String email;
     private String fullName;
 
+    //User para REGISTRARSE
     public User(String email, String fullName, String letter) {
         this.email = email;
         this.fullName = fullName;
