@@ -21,7 +21,7 @@ public class ManagerJDBC {
             c = DriverManager.getConnection("jdbc:sqlite:./db/ParkinsonTelemonitoringDDBB.db");
             c.createStatement().execute("PRAGMA foreign_keys=ON");
             System.out.println("DDBB CONNECTION OPENED!");
-            this.createTables();
+            this.createUserTables();
             this.insertValuesIntoRoleTable();
             this.insertValuesIntoSymptomsTable();
             this.insertAdministrator();
@@ -44,19 +44,60 @@ public class ManagerJDBC {
         }
     }
 
-    private void createTables() throws SQLException{
+    private void createUserTables() throws SQLException{
 
-        Statement stmt = c.createStatement();
 
-        String createUsersTable = "CREATE TABLE IF NOT EXISTS Users ("
+        String sql = "CREATE TABLE IF NOT EXISTS Users ("
                 + "id VARCHAR(20) PRIMARY KEY, "
                 + "email VARCHAR(255) NOT NULL UNIQUE, "
                 + "full_name VARCHAR(255) NOT NULL, "
                 + "password VARCHAR(255) NOT NULL"
                 + ");";
-        stmt.executeUpdate(createUsersTable);
+
+        try (Statement stmt = c.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla users creada correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
+
+    public void createPatientsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS patients (" +
+                "patient_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "full_name VARCHAR(50) NOT NULL, " +
+                "dob DATE NOT NULL, " +
+                "email VARCHAR(100) UNIQUE NOT NULL, " +
+                "password VARCHAR(255) NOT NULL" +
+                "doctor_id INT, " +
+                "FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id))";
+
+        try (Statement stmt = c.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla patients creada correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createDoctorsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS patients (" +
+                "doctor_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "full_name VARCHAR(50) NOT NULL, " +
+                "dob DATE NOT NULL, " +
+                "email VARCHAR(100) UNIQUE NOT NULL, " +
+                "password VARCHAR(255) NOT NULL" +
+                "doctor_id INT))";
+
+        try (Statement stmt = c.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla doctors creada correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void insertValuesIntoRoleTable() {
 
