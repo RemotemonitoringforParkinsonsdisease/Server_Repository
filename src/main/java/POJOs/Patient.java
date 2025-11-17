@@ -24,4 +24,11 @@ public class Patient extends User {
         this.dob = dob;
         this.password = password;
     }
+
+    public Patient(int id, String fullName, LocalDate dob, String email) {
+        super(fullName);
+        this.dob = dob;
+        this.email = email;
+        this.id = id;
+    }
 }

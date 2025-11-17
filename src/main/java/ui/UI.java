@@ -1,12 +1,11 @@
 package ui;
 
-import JDBCs.ManagerJDBC;
+import jdbcs.ManagerJDBC;
 import POJOs.Patient;
 import manageData.ReceiveDataViaNetwork;
 import manageData.SendDataViaNetwork;
 import POJOs.User;
 
-import java.io.IOException;
 import java.net.Socket;
 
 public class UI {
