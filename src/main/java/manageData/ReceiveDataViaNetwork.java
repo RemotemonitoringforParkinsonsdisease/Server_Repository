@@ -12,66 +12,61 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ReceiveDataViaNetwork {
-    private DataInputStream dataInputStream;
+    private final DataInputStream dataInputStream;
 
-    public ReceiveDataViaNetwork (Socket socket) {
+    public ReceiveDataViaNetwork(Socket socket) {
+        DataInputStream dis = null;
         try {
-            this.dataInputStream = new DataInputStream(socket.getInputStream());
+            dis = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, null, e);
         }
+        this.dataInputStream = dis;
     }
 
     public String receiveString() {
         try {
             return dataInputStream.readUTF();
         } catch (IOException ex) {
-            System.err.println("Error recibing String");
-            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, "Error receiving String", ex);
             return null;
         }
     }
 
-    public Patient receivePatient() {
-        Patient patient = null;
-
+    public int receiveInt() {
         try {
-            String email = dataInputStream.readUTF();
-            String fullName = dataInputStream.readUTF();
-            String date = dataInputStream.readUTF();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate dob = LocalDate.parse(date, formatter);
-            String password = dataInputStream.readUTF();
-
-            patient = new Patient(email, fullName, dob, password, "P");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return dataInputStream.readInt();
+        } catch (IOException ex) {
+            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, "Error receiving int", ex);
+            return -1; // Valor por defecto en error
         }
-        return patient;
     }
 
-/*    public Doctor receiveDoctor(ReceiveDataViaNetwork recieveDataViaNetwork, SendDataViaNetwork sendDataViaNetwork, UserManager userManager, DoctorManager doctorManager, PatientManager patientManager, SymptomsManager symptomsManager, InterpretationManager interpretationManager, Socket socket){
-        Doctor doctor = null;
+    public Patient receivePatient() {
         try {
-            int id = dataInputStream.readInt();
-            String fullName = dataInputStream.readUTF();
-            String date = dataInputStream.readUTF();
-            String email = dataInputStream.readUTF();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate dob = LocalDate.parse(date, formatter);
-            doctor = new Doctor(id, name, surname, dob, email);
-        } catch (EOFException ex) {
-            System.out.println("All data have been correctly read.");
-        } catch (IOException ex) {
-            System.out.println("Unable to read from the client.");
-            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, null, ex);
+            String email = receiveString();
+            String fullName = receiveString();
+            String date = receiveString();
+            LocalDate dob = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String password = receiveString();
+            return new Patient(email, fullName, dob, password, "P");
+        } catch (Exception e) {
+            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, "Error receiving patient", e);
+            return null;
         }
+    }
 
-        return doctor;
-    }*/
-
-    public int receiveInt() throws IOException{
-        return dataInputStream.readInt();
+    public Doctor receiveDoctor() {
+        try {
+            String email = receiveString();
+            String fullName = receiveString();
+            String date = receiveString();
+            LocalDate dob = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String password = receiveString();
+            return new Doctor(email, password, fullName, dob, null);
+        } catch (Exception e) {
+            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, "Error receiving doctor", e);
+            return null;
+        }
     }
 }

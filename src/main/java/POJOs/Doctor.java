@@ -15,4 +15,12 @@ public class Doctor extends User {
         this.dob = dob;
         this.patients = patients;
     }
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 }

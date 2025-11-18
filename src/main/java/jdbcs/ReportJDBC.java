@@ -29,10 +29,8 @@ public class ReportJDBC implements ReportManager {
             stmt.setString(4, report.getSignalByType(SignalType.EDA) != null ? report.getSignalByType(SignalType.EDA).valuesToString() : "");
             stmt.setString(5, report.getSignalByType(SignalType.ECG) != null ? report.getSignalByType(SignalType.ECG).valuesToString() : "");
             stmt.setString(6, report.getSignalByType(SignalType.ACC) != null ? report.getSignalByType(SignalType.ACC).valuesToString() : "");
-
-            stmt.setInt(7, report.getPatient().getId());
-            stmt.setInt(8, report.getPatient().getDoctor() != null ? report.getPatient().getDoctor().getId() : 0);
-
+            stmt.setInt(7, Integer.parseInt(report.getPatient().getId()));
+            stmt.setInt(8, report.getPatient().getDoctor() != null ? Integer.parseInt(report.getPatient().getDoctor().getId()) : 0);
             stmt.setString(9, report.getPatientObservation());
             stmt.setString(10, report.getDoctorObservation());
 

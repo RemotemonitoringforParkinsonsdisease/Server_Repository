@@ -17,6 +17,11 @@ public class Patient extends User {
         this.dob = dob;
         this.doctor = doctor;
     }
+    public Patient(String email, String fullName, LocalDate dob, String password, String letter) {
+        super(email, fullName, letter);
+        this.dob = dob;
+        this.password = password;
+    }
 
     // Constructor para registrar paciente
     public Patient(String email, String fullName, LocalDate dob, String password, Doctor doctor) {
