@@ -14,18 +14,20 @@ public class ReportJDBC implements ReportManager {
     }
 
     public void addReport(Report report) {
-        String sql = "INSERT INTO Interpretation (date, interpretation, signalEMG, signalEDA, patient_id, doctor_id, observation) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO Report (date, report, signalEMG, signalEDA, signalECG, signalACC, patient_id, doctor_id, observation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try {
 
             PreparedStatement statement = manager.getConnection().prepareStatement(sql);
 
-            statement.setString(1, report.getDate().toString());
-            statement.setString(2, report.getInterpretation());
+            statement.setString(1, report.getReportDate().toString());
+            statement.setString(2, report.getReportId());
             statement.setString(3, report.getSignalEMG().valuesToString());
             statement.setString(4, report.getSignalEDA().valuesToString());
-            statement.setInt(5, report.getPatient_id());
-            statement.setInt(6, report.getDoctor_id());
-            statement.setString(7, report.getObservation());
+            statement.setString(5, report.getSignalECG().valuesToString());
+            statement.setString(6, report.getSignalACC().valuesToString());
+            statement.setInt(7, report.getPatient_id());
+            statement.setInt(8, report.getDoctor_id());
+            statement.setString(9, report.getObservation());
 
             statement.executeUpdate();
             statement.close();

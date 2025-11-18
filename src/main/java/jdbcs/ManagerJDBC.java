@@ -82,7 +82,7 @@ public class ManagerJDBC {
     }
 
     public void createDoctorsTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS patients (" +
+        String sql = "CREATE TABLE IF NOT EXISTS doctors (" +
                 "doctor_id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "full_name VARCHAR(50) NOT NULL, " +
                 "dob DATE NOT NULL, " +
