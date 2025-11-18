@@ -8,27 +8,54 @@ public class Patient extends User {
     private String password;
     private Doctor doctor;
     private LocalDate dob;
-    private Set <Report> reports;
+    private Set<Report> reports = new HashSet<>();
 
-    public Patient(String email, String password, String fullName, LocalDate dob, Doctor doctor, Set<Report> reports) {
+    // Constructor para cargar paciente desde DB
+    public Patient(int id, String fullName, LocalDate dob, String email, Doctor doctor) {
         super(email, fullName);
+        this.id = String.valueOf(id);  // convierto int a String para la herencia de User
         this.dob = dob;
-        this.password = password;
-        this.reports = reports;
         this.doctor = doctor;
     }
 
-    //Constructor para REGISTRARSE
-    public Patient(String email, String fullName, LocalDate dob,  String password, String letter) {
-        super(email, fullName, letter);
+    // Constructor para registrar paciente
+    public Patient(String email, String fullName, LocalDate dob, String password, Doctor doctor) {
+        super(email, fullName, "P"); // letra inicial P para pacientes
         this.dob = dob;
+        this.password = password;
+        this.doctor = doctor;
+    }
+
+    // Getters y setters
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public Patient(int id, String fullName, LocalDate dob, String email) {
-        super(fullName);
-        this.dob = dob;
-        this.email = email;
-        this.id = id;
+    public Set<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(Set<Report> reports) {
+        this.reports = reports;
     }
 }

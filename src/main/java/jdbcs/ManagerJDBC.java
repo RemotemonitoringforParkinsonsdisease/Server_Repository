@@ -25,6 +25,8 @@ public class ManagerJDBC {
             this.insertValuesIntoRoleTable();
             this.insertValuesIntoSymptomsTable();
             this.insertAdministrator();
+            this.createDoctorsTable();
+            this.createPatientsTable();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,7 +49,7 @@ public class ManagerJDBC {
     private void createUserTables() throws SQLException{
 
 
-        String sql = "CREATE TABLE IF NOT EXISTS Users ("
+        String sql = "CREATE TABLE IF NOT EXISTS User ("
                 + "id VARCHAR(20) PRIMARY KEY, "
                 + "email VARCHAR(255) NOT NULL UNIQUE, "
                 + "full_name VARCHAR(255) NOT NULL, "
@@ -64,12 +66,12 @@ public class ManagerJDBC {
     }
 
     public void createPatientsTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS patients (" +
+        String sql = "CREATE TABLE IF NOT EXISTS Patient (" +
                 "patient_id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "full_name VARCHAR(50) NOT NULL, " +
                 "dob DATE NOT NULL, " +
                 "email VARCHAR(100) UNIQUE NOT NULL, " +
-                "password VARCHAR(255) NOT NULL" +
+                "password VARCHAR(255) NOT NULL," +
                 "doctor_id INT, " +
                 "FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id))";
 
@@ -82,12 +84,12 @@ public class ManagerJDBC {
     }
 
     public void createDoctorsTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS doctors (" +
+        String sql = "CREATE TABLE IF NOT EXISTS Doctor (" +
                 "doctor_id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "full_name VARCHAR(50) NOT NULL, " +
                 "dob DATE NOT NULL, " +
                 "email VARCHAR(100) UNIQUE NOT NULL, " +
-                "password VARCHAR(255) NOT NULL" +
+                "password VARCHAR(255) NOT NULL," +
                 "doctor_id INT))";
 
         try (Statement stmt = c.createStatement()) {

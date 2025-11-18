@@ -51,6 +51,19 @@ public class Signal {
     public int getSamplingRate() {
         return samplingRate;
     }
+
+    public String valuesToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Float f : values) {
+            sb.append(f).append(",");
+        }
+        if(sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1); // eliminar última coma
+        }
+        return sb.toString();
+    }
+
+
     public void storeSignalInFile() {
         FileWriter fw = null;
         BufferedWriter bw = null;
