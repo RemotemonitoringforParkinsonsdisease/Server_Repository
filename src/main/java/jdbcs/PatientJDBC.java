@@ -18,41 +18,45 @@ public class PatientJDBC implements PatientManager {
     }
 
     @Override
-    public void addPatient(String fullName, String email, int doctorId, int patientId) {
-        String sql = "INSERT INTO Patient (full_name, email, doctor_id, patient_id) VALUES (?,?,?,?)";
+    public void addPatient(Patient patient) {
+        String sql = "INSERT INTO Patient (patient_id, full_name, dob, email, password, doctor_id) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, fullName);
-            stmt.setString(2, email);
-            stmt.setInt(3, doctorId);
-            stmt.setInt(4, patientId);
+            stmt.setString(1, patient.getId());
+            stmt.setString(2, patient.getFullName());
+            stmt.setString(3, patient.getDob().toString());
+            stmt.setString(4, patient.getEmail());
+            stmt.setString(5, patient.getPassword());
+            stmt.setString(6, patient.getDoctorId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
     @Override
-    public Patient getPatientById(int id) {
-        String sql = "SELECT * FROM Patient WHERE patient_id=?";
+    public Patient getPatientById(String id) {
+        String sql = "SELECT * FROM Patient WHERE patient_id = ?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String fullName = rs.getString("full_name");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String email = rs.getString("email");
-                String dobString = rs.getString("dob");
-                LocalDate dob = (dobString != null) ? LocalDate.parse(dobString) : null;
+                String password = rs.getString("password");
+                String doctorId = rs.getString("doctor_id");
 
-                // Por ahora el doctor lo ponemos a null, luego puedes implementarlo con DoctorJDBC
-                Doctor doctor = null;
-
-                return new Patient(id, fullName, dob, email, doctor);
+                Patient p = new Patient(id, fullName, dob, email, password);
+                p.setDoctorId(doctorId);
+                return p;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     @Override
     public List<Patient> readPatients() {
@@ -76,4 +80,54 @@ public class PatientJDBC implements PatientManager {
         }
         return patients;
     }
+
+    @Override
+    public Patient getPatientByEmail(String email) {
+        String sql = "SELECT * FROM Patient WHERE email = ?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String id = rs.getString("patient_id");
+                String fullName = rs.getString("full_name");
+                String dobStr = rs.getString("dob");
+                String password = rs.getString("password");
+                String doctorId = rs.getString("doctor_id");
+
+                LocalDate dob = LocalDate.parse(dobStr);
+
+                Patient p = new Patient(id, fullName, dob, email, password);
+                p.setDoctorId(doctorId);
+                return p;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Patient> getPatientsByDoctor(String doctorId) {
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM Patient WHERE doctor_id = ?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, doctorId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String id = rs.getString("patient_id");
+                String fullName = rs.getString("full_name");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+
+                Patient p = new Patient(id, fullName, dob, email, password);
+                p.setDoctorId(doctorId);
+                patients.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return patients;
+    }
+
 }

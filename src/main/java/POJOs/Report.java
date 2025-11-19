@@ -22,6 +22,15 @@ public class Report {
         this.doctorObservation = doctorObservation;
     }
 
+    public Set<Signal> getSignals() {
+        return signals;
+    }
+
+    public void setSignals(Set<Signal> signals) {
+        this.signals = signals;
+    }
+
+
     public Patient getPatient() {
         return patient;
     }
@@ -32,6 +41,10 @@ public class Report {
 
     public String getDoctorObservation() {
         return doctorObservation;
+    }
+
+    public void setPatientObservation(String patientObservation) {
+        this.patientObservation = patientObservation;
     }
 
     public void setReportId(String reportId) {
@@ -51,6 +64,14 @@ public class Report {
     }
     public LocalDate getReportDate() {
         return reportDate;
+    }
+
+    public List<Symptoms> getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(List<Symptoms> symptoms) {
+        this.symptoms = symptoms;
     }
 
 }

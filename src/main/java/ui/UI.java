@@ -14,6 +14,8 @@ import managers.ReportManager;
 import java.net.Socket;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -167,7 +169,7 @@ public class UI {
     }
 
     private void initiateReport(Patient patient) {
-        Report report = new Report(patient, LocalDate.now(), "", "", "");
+        Report report = new Report(patient, LocalDate.now(), "", "");
         // Aquí llamar a métodos para: recordSignals(report), chooseSymptoms(report), addObservations(report)
         // Una vez completado:
         manager.getReportJDBC().addReport(report);
@@ -266,5 +268,59 @@ public class UI {
             }
         }
     }
+
+    // Inicia la grabación de señales
+    private void recordSignals(Report report) {
+        // Aquí se simula la grabación de señales; si tuvieras integración con Bitalino, pondrías la lógica real
+        System.out.println("Recording signals...");
+        // Por ejemplo, puedes inicializar señales vacías
+        report.setSignals(new HashSet<>()); // Vacío por ahora, luego puedes agregar Signal reales
+        System.out.println("Signals recorded successfully.");
+    }
+
+    private void addObservations(Report report) {
+        System.out.println("Enter your observations for this report:");
+        String obs = scanner.nextLine();
+        report.setPatientObservation(obs);
+    }
+
+    private void chooseSymptoms(Report report) {
+        List<Symptoms> chosenSymptoms = new ArrayList<>();
+        boolean done = false;
+
+        Symptoms[] allSymptoms = Symptoms.values();
+
+        while (!done) {
+            System.out.println("Select a symptom (enter 0 to finish):");
+            for (int i = 0; i < allSymptoms.length; i++) {
+                System.out.println((i + 1) + ". " + allSymptoms[i].name());
+            }
+
+            int choice;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, try again.");
+                continue;
+            }
+
+            if (choice == 0) {
+                done = true;
+            } else if (choice >= 1 && choice <= allSymptoms.length) {
+                Symptoms selected = allSymptoms[choice - 1];
+                if (!chosenSymptoms.contains(selected)) {
+                    chosenSymptoms.add(selected);
+                    System.out.println(selected.name() + " added.");
+                } else {
+                    System.out.println(selected.name() + " already selected.");
+                }
+            } else {
+                System.out.println("Invalid choice, try again.");
+            }
+        }
+
+        report.setSymptoms(chosenSymptoms);
+    }
+
 
 }

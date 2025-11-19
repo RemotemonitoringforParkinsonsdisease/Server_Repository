@@ -63,4 +63,20 @@ public class Patient extends User {
     public void setReports(Set<Report> reports) {
         this.reports = reports;
     }
+
+    public String getId() {
+        return id; // id es String con formato "p123456789"
+    }
+
+    private String doctorId;
+
+    public String getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(String doctorId) {
+        this.doctorId = doctorId;
+    }
+
+
 }

@@ -74,4 +74,32 @@ public class ReportJDBC implements ReportManager {
         }
         return reports;
     }
+
+    @Override
+    public List<Report> getReportsByPatient(String patientId) {
+        List<Report> reports = new ArrayList<>();
+        String sql = "SELECT * FROM Report WHERE patient_id = ?";
+
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, patientId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String reportId = rs.getString("report_id");
+                String patientObservation = rs.getString("patient_observation");
+                String doctorObservation = rs.getString("doctor_observation");
+
+                Report r = new Report(null, null, patientObservation, doctorObservation);
+                r.setReportId(reportId);
+
+                reports.add(r);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reports;
+    }
+
 }

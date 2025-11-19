@@ -15,6 +15,11 @@ public class Doctor extends User {
         this.dob = dob;
         this.patients = patients;
     }
+    public Doctor(String id, String fullName, LocalDate dob, String email, String password) {
+        super(id, fullName, email);
+        this.password = password;
+        this.dob = dob;
+    }
     public LocalDate getDob() {
         return dob;
     }
