@@ -9,11 +9,13 @@ public class Patient extends User {
     private Doctor doctor;
     private LocalDate dob;
     private Set<Report> reports = new HashSet<>();
+    private String doctorId;
+
 
     // Constructor para cargar paciente desde DB
-    public Patient(int id, String fullName, LocalDate dob, String email, Doctor doctor) {
+    public Patient(String id, String fullName, LocalDate dob, String email, Doctor doctor) {
         super(email, fullName);
-        this.id = String.valueOf(id);  // convierto int a String para la herencia de User
+        this.id = id;
         this.dob = dob;
         this.doctor = doctor;
     }
@@ -23,13 +25,13 @@ public class Patient extends User {
         this.password = password;
     }
 
-    // Constructor para registrar paciente
+    /* Constructor para registrar paciente
     public Patient(String email, String fullName, LocalDate dob, String password, Doctor doctor) {
         super(email, fullName, "P"); // letra inicial P para pacientes
         this.dob = dob;
         this.password = password;
         this.doctor = doctor;
-    }
+    }*/
 
     // Getters y setters
     public Doctor getDoctor() {
@@ -67,8 +69,6 @@ public class Patient extends User {
     public String getId() {
         return id; // id es String con formato "p123456789"
     }
-
-    private String doctorId;
 
     public String getDoctorId() {
         return doctorId;

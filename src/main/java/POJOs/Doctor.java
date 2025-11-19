@@ -28,4 +28,8 @@ public class Doctor extends User {
         return password;
     }
 
+    public String getId() {
+        return id; // id es String con formato "p123456789"
+    }
+
 }

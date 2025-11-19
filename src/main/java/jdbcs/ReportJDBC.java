@@ -1,7 +1,6 @@
 package jdbcs;
 
 import POJOs.Report;
-import POJOs.Signal;
 import POJOs.SignalType;
 import managers.ReportManager;
 
@@ -29,8 +28,11 @@ public class ReportJDBC implements ReportManager {
             stmt.setString(4, report.getSignalByType(SignalType.EDA) != null ? report.getSignalByType(SignalType.EDA).valuesToString() : "");
             stmt.setString(5, report.getSignalByType(SignalType.ECG) != null ? report.getSignalByType(SignalType.ECG).valuesToString() : "");
             stmt.setString(6, report.getSignalByType(SignalType.ACC) != null ? report.getSignalByType(SignalType.ACC).valuesToString() : "");
-            stmt.setInt(7, Integer.parseInt(report.getPatient().getId()));
-            stmt.setInt(8, report.getPatient().getDoctor() != null ? Integer.parseInt(report.getPatient().getDoctor().getId()) : 0);
+
+            // IDs como Strings
+            stmt.setString(7, report.getPatient().getId());
+            stmt.setString(8, report.getPatient().getDoctor() != null ? report.getPatient().getDoctor().getId() : null);
+
             stmt.setString(9, report.getPatientObservation());
             stmt.setString(10, report.getDoctorObservation());
 
@@ -42,12 +44,11 @@ public class ReportJDBC implements ReportManager {
 
     @Override
     public Report getReportById(String reportId) {
-        String sql = "SELECT * FROM Report WHERE report_id=?";
+        String sql = "SELECT * FROM Report WHERE report_id = ?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setString(1, reportId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                // Para simplificar devolvemos solo reportId y observaciones
                 Report r = new Report(null, null, rs.getString("patient_observation"), rs.getString("doctor_observation"));
                 r.setReportId(rs.getString("report_id"));
                 return r;
@@ -79,11 +80,9 @@ public class ReportJDBC implements ReportManager {
     public List<Report> getReportsByPatient(String patientId) {
         List<Report> reports = new ArrayList<>();
         String sql = "SELECT * FROM Report WHERE patient_id = ?";
-
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setString(1, patientId);
             ResultSet rs = stmt.executeQuery();
-
             while (rs.next()) {
                 String reportId = rs.getString("report_id");
                 String patientObservation = rs.getString("patient_observation");
@@ -91,15 +90,11 @@ public class ReportJDBC implements ReportManager {
 
                 Report r = new Report(null, null, patientObservation, doctorObservation);
                 r.setReportId(reportId);
-
                 reports.add(r);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return reports;
     }
-
 }

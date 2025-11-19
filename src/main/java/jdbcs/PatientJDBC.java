@@ -1,7 +1,6 @@
 package jdbcs;
 
 import POJOs.Patient;
-import POJOs.Doctor;
 import managers.PatientManager;
 
 import java.sql.*;
@@ -33,7 +32,6 @@ public class PatientJDBC implements PatientManager {
         }
     }
 
-
     @Override
     public Patient getPatientById(String id) {
         String sql = "SELECT * FROM Patient WHERE patient_id = ?";
@@ -57,30 +55,6 @@ public class PatientJDBC implements PatientManager {
         return null;
     }
 
-
-    @Override
-    public List<Patient> readPatients() {
-        List<Patient> patients = new ArrayList<>();
-        String sql = "SELECT * FROM Patient";
-        try (Statement stmt = manager.getConnection().createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                int id = rs.getInt("patient_id");
-                String fullName = rs.getString("full_name");
-                String dobString = rs.getString("dob");
-                LocalDate dob = (dobString != null) ? LocalDate.parse(dobString) : null;
-                String email = rs.getString("email");
-
-                Doctor doctor = null; // Se puede implementar luego
-
-                patients.add(new Patient(id, fullName, dob, email, doctor));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return patients;
-    }
-
     @Override
     public Patient getPatientByEmail(String email) {
         String sql = "SELECT * FROM Patient WHERE email = ?";
@@ -90,11 +64,9 @@ public class PatientJDBC implements PatientManager {
             if (rs.next()) {
                 String id = rs.getString("patient_id");
                 String fullName = rs.getString("full_name");
-                String dobStr = rs.getString("dob");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String password = rs.getString("password");
                 String doctorId = rs.getString("doctor_id");
-
-                LocalDate dob = LocalDate.parse(dobStr);
 
                 Patient p = new Patient(id, fullName, dob, email, password);
                 p.setDoctorId(doctorId);
@@ -104,6 +76,30 @@ public class PatientJDBC implements PatientManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public List<Patient> readPatients() {
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM Patient";
+        try (Statement stmt = manager.getConnection().createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                String id = rs.getString("patient_id");
+                String fullName = rs.getString("full_name");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+                String doctorId = rs.getString("doctor_id");
+
+                Patient p = new Patient(id, fullName, dob, email, password);
+                p.setDoctorId(doctorId);
+                patients.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patients;
     }
 
     @Override
@@ -129,5 +125,4 @@ public class PatientJDBC implements PatientManager {
         }
         return patients;
     }
-
 }

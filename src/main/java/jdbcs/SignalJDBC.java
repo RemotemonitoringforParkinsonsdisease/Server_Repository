@@ -31,7 +31,7 @@ public class SignalJDBC implements SignalManager {
 
     @Override
     public Signal getSignalById(String signalId) {
-        String sql = "SELECT * FROM Signal WHERE signal_id=?";
+        String sql = "SELECT * FROM Signal WHERE signal_id = ?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setString(1, signalId);
             ResultSet rs = stmt.executeQuery();

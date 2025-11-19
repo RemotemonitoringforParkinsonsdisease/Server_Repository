@@ -23,16 +23,21 @@ public class UI {
 
     private Socket socket;
     private ManagerJDBC manager;
-    private ReceiveDataViaNetwork receiveData;
-    private SendDataViaNetwork sendData;
+    private ReceiveDataViaNetwork receiveDataViaNetwork;
+    private SendDataViaNetwork sendDataViaNetwork;
     private Scanner scanner;
 
     public UI(Socket socket, ManagerJDBC manager, ReceiveDataViaNetwork receiveData, SendDataViaNetwork sendData) {
         this.socket = socket;
         this.manager = manager;
-        this.receiveData = receiveData;
-        this.sendData = sendData;
+        this.receiveDataViaNetwork = receiveData;
+        this.sendDataViaNetwork = sendData;
         this.scanner = new Scanner(System.in);
+    }
+
+    public UI(Socket socket, ManagerJDBC manager){
+        this.socket = socket;
+        this.manager = manager;
     }
 
     // ---------------------- MENÚ PRINCIPAL ----------------------
@@ -77,54 +82,62 @@ public class UI {
         }
     }
 
-    private void registerPatient() {
-        System.out.println("Enter email:");
-        String email = scanner.nextLine();
+    public void registerPatient() {
+        sendDataViaNetwork.sendString("Enter email:");
+        String email = receiveDataViaNetwork.receiveString(); // leer desde socket
         if (manager.getPatientJDBC().getPatientByEmail(email) != null) {
-            System.out.println("Email already exists.");
+            sendDataViaNetwork.sendString("Email already exists.");
             return;
         }
 
-        System.out.println("Enter full name:");
-        String fullName = scanner.nextLine();
-        System.out.println("Enter date of birth (yyyy-MM-dd):");
-        LocalDate dob = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        System.out.println("Enter password:");
-        String password = scanner.nextLine();
+        sendDataViaNetwork.sendString("Enter full name:");
+        String fullName = receiveDataViaNetwork.receiveString();
+
+        sendDataViaNetwork.sendString("Enter date of birth (yyyy-MM-dd):");
+        LocalDate dob = LocalDate.parse(receiveDataViaNetwork.receiveString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        sendDataViaNetwork.sendString("Enter password:");
+        String password = receiveDataViaNetwork.receiveString();
 
         Patient patient = new Patient(email, fullName, dob, password, "P");
 
         // Asignar doctor aleatorio
         Doctor doctor = manager.assignRandomDoctor();
         if (doctor == null) {
-            System.out.println("No doctors available. Cannot register patient.");
+            sendDataViaNetwork.sendString("No doctors available. Cannot register patient.");
             return;
         }
         patient.setDoctor(doctor);
 
         manager.getPatientJDBC().addPatient(patient);
-        System.out.println("Patient registered successfully with doctor: " + doctor.getFullName());
+        sendDataViaNetwork.sendString("Patient registered successfully with doctor: " + doctor.getFullName());
     }
+
+
 
     private Patient loginPatient() {
         System.out.println("Enter email:");
-        String email = scanner.nextLine();
+        String email = receiveDataViaNetwork.receiveString();  // leer desde socket
         Patient patient = manager.getPatientJDBC().getPatientByEmail(email);
         if (patient == null) {
             System.out.println("Email not found.");
+            sendDataViaNetwork.sendString("Email not found"); // responder al cliente
             return null;
         }
 
         System.out.println("Enter password:");
-        String password = scanner.nextLine();
+        String password = receiveDataViaNetwork.receiveString(); // leer desde socket
         if (!patient.getPassword().equals(password)) {
             System.out.println("Incorrect password.");
+            sendDataViaNetwork.sendString("Incorrect password"); // responder al cliente
             return null;
         }
 
         System.out.println("Login successful.");
+        sendDataViaNetwork.sendString("Login successful"); // responder al cliente
         return patient;
     }
+
 
     private void patientLoggedInMenu(Patient patient) {
         boolean running = true;

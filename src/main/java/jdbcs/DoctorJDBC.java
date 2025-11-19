@@ -16,17 +16,18 @@ public class DoctorJDBC implements DoctorManager {
     }
 
     @Override
-    public void addDoctor(String fullName, String email, int doctorId) {
+    public void addDoctor(String fullName, String email, String doctorId) { // antes era int
         String sql = "INSERT INTO Doctor (full_name, email, doctor_id) VALUES (?,?,?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setString(1, fullName);
             stmt.setString(2, email);
-            stmt.setInt(3, doctorId);
+            stmt.setString(3, doctorId); // ahora es String
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public void addDoctor(Doctor doctor) {
         String sql = "INSERT INTO Doctor (doctor_id, full_name, dob, email, password) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
@@ -42,21 +43,27 @@ public class DoctorJDBC implements DoctorManager {
     }
 
     @Override
-    public Doctor getDoctorById(int id) {
+    public Doctor getDoctorById(String id) { // antes era int
         String sql = "SELECT * FROM Doctor WHERE doctor_id=?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setString(1, id); // usar String en vez de int
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String fullName = rs.getString("full_name");
                 String email = rs.getString("email");
-                return new Doctor(email, null, fullName, null, null); // Adaptar constructor según tus POJOs
+                String dobStr = rs.getString("dob");
+                String password = rs.getString("password");
+
+                LocalDate dob = dobStr != null ? LocalDate.parse(dobStr) : null;
+
+                return new Doctor(id, fullName, dob, email, password);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     @Override
     public List<Doctor> readDoctors() {
@@ -65,16 +72,20 @@ public class DoctorJDBC implements DoctorManager {
         try (Statement stmt = manager.getConnection().createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                int id = rs.getInt("doctor_id");
+                String id = rs.getString("doctor_id"); // ahora es String
                 String fullName = rs.getString("full_name");
                 String email = rs.getString("email");
-                doctors.add(new Doctor(email, null, fullName, null, null));
+                String dobStr = rs.getString("dob");
+                String password = rs.getString("password");
+                LocalDate dob = dobStr != null ? LocalDate.parse(dobStr) : null;
+                doctors.add(new Doctor(id, fullName, dob, email, password));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return doctors;
     }
+
 
     @Override
     public Doctor getDoctorByEmail(String email) {
