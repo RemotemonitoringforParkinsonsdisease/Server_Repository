@@ -5,24 +5,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Patient extends User {
-    private String password;
     private Doctor doctor;
     private LocalDate dob;
     private Set<Report> reports = new HashSet<>();
     private String doctorId;
+    private String fullName;
 
 
     // Constructor para cargar paciente desde DB
-    public Patient(String id, String fullName, LocalDate dob, String email, Doctor doctor) {
-        super(email, fullName);
+    public Patient(String id, String fullName, LocalDate dob, Doctor doctor) {
         this.id = id;
         this.dob = dob;
         this.doctor = doctor;
+        this.fullName = fullName;
     }
-    public Patient(String email, String fullName, LocalDate dob, String password, String letter) {
-        super(email, fullName, letter);
+    public Patient(String fullName, LocalDate dob) {
         this.dob = dob;
-        this.password = password;
+        this.fullName =fullName;
     }
 
     /* Constructor para registrar paciente
@@ -50,23 +49,7 @@ public class Patient extends User {
         this.dob = dob;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Report> getReports() {
-        return reports;
-    }
-
-    public void setReports(Set<Report> reports) {
-        this.reports = reports;
-    }
-
-    public String getId() {
+    public Integer getId() {
         return id; // id es String con formato "p123456789"
     }
 
