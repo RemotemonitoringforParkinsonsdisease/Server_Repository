@@ -37,7 +37,6 @@ public class ManagerJDBC {
 
             System.out.println("DDBB CONNECTION OPENED!");
 
-            createUserTables();
             createDoctorsTable();
             createPatientsTable();
             createReportsTable();
@@ -61,24 +60,6 @@ public class ManagerJDBC {
     public void disconnect() {
         try {
             c.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ---------------------- TABLAS -----------------------
-
-    private void createUserTables() {
-        String sql = "CREATE TABLE IF NOT EXISTS User ("
-                + "id VARCHAR(20) PRIMARY KEY, "
-                + "email TEXT NOT NULL UNIQUE, "
-                + "full_name TEXT NOT NULL, "
-                + "password TEXT NOT NULL"
-                + ");";
-
-        try (Statement stmt = c.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Tabla User creada correctamente.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
