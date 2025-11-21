@@ -6,64 +6,51 @@ import java.util.Set;
 
 public class Report {
 
-    private String reportId;
-    private Patient patient;
+    private Integer reportId;
+    private Integer patientId;
     private LocalDate reportDate;
-    private Set<Signal> signals;
+    private List<Signal> signals;
     private List<Symptoms> symptoms;
     private String patientObservation;
     private String doctorObservation;
 
-    // Constructor necesario para ReportJDBC
-    public Report(Patient patient, LocalDate reportDate, String patientObservation, String doctorObservation) {
-        this.patient = patient;
+    public Report(Integer reportId, Integer patientId, LocalDate reportDate, String patientObservation) {
+        this.reportId = reportId;
+        this.patientId = patientId;
         this.reportDate = reportDate;
         this.patientObservation = patientObservation;
-        this.doctorObservation = doctorObservation;
     }
 
-    public Set<Signal> getSignals() {
-        return signals;
-    }
-
-    public void setSignals(Set<Signal> signals) {
-        this.signals = signals;
-    }
-
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public String getPatientObservation() {
-        return patientObservation;
-    }
-
-    public String getDoctorObservation() {
-        return doctorObservation;
-    }
-
-    public void setPatientObservation(String patientObservation) {
-        this.patientObservation = patientObservation;
-    }
-
-    public void setReportId(String reportId) {
-        this.reportId = reportId;
-    }
-
-    public String getReportId() {
+    public Integer getReportId() {
         return reportId;
     }
 
-    public Signal getSignalByType(SignalType type) {
-        if (signals == null) return null;
-        for (Signal s : signals) {
-            if (s.getSignalType() == type) return s;
-        }
-        return null;
+    public void setReportId(Integer reportId) {
+        this.reportId = reportId;
     }
+
+    public Integer getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(Integer patientId) {
+        this.patientId = patientId;
+    }
+
     public LocalDate getReportDate() {
         return reportDate;
+    }
+
+    public void setReportDate(LocalDate reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public List<Signal> getSignals() {
+        return signals;
+    }
+
+    public void setSignals(List<Signal> signals) {
+        this.signals = signals;
     }
 
     public List<Symptoms> getSymptoms() {
@@ -74,4 +61,27 @@ public class Report {
         this.symptoms = symptoms;
     }
 
+    public String getPatientObservation() {
+        return patientObservation;
+    }
+
+    public void setPatientObservation(String patientObservation) {
+        this.patientObservation = patientObservation;
+    }
+
+    public String getDoctorObservation() {
+        return doctorObservation;
+    }
+
+    public void setDoctorObservation(String doctorObservation) {
+        this.doctorObservation = doctorObservation;
+    }
+
+    public Signal getSignalByType(SignalType type) {
+        if (signals == null) return null;
+        for (Signal s : signals) {
+            if (s.getSignalType() == type) return s;
+        }
+        return null;
+    }
 }

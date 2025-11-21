@@ -4,21 +4,52 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
-public class Doctor extends User {
-    private String fullName;
+public class Doctor{
+    private Integer userId;
+    private Integer doctorId;
+    private String doctorPassword;
     private LocalDate dob;
     private List<Patient> patients;
 
-    public Doctor(String fullName, String fullName, LocalDate dob, List<Patient> patients) {
-        this.fullName = fullName;
+    public Doctor(Integer userId, Integer doctorId, String doctorPassword, LocalDate dob) {
+        this.userId = userId;
+        this.doctorId = doctorId;
+        this.doctorPassword = doctorPassword;
+        this.dob = dob;
+    }
+
+    public Doctor(Integer userId, Integer doctorId, String doctorPassword, LocalDate dob, List<Patient> patients) {
+        this.userId = userId;
+        this.doctorId = doctorId;
+        this.doctorPassword = doctorPassword;
         this.dob = dob;
         this.patients = patients;
     }
-    public Doctor(String id, String fullName, LocalDate dob) {
-        this.id = id;
-        this.fullName = fullName;
-        this.dob = dob;
+
+    public Integer getUserId() {
+        return userId;
     }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Integer doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public String getDoctorPassword() {
+        return doctorPassword;
+    }
+
+    public void setDoctorPassword(String doctorPassword) {
+        this.doctorPassword = doctorPassword;
+    }
+
     public LocalDate getDob() {
         return dob;
     }
@@ -26,14 +57,12 @@ public class Doctor extends User {
     public void setDob(LocalDate dob) {
         this.dob = dob;
     }
-    public String getFullName() {
-        return fullName;
-    }
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-    public Integer getId() {
-        return id;
+
+    public List<Patient> getPatients() {
+        return patients;
     }
 
+    public void setPatients(List<Patient> patients) {
+        this.patients = patients;
+    }
 }

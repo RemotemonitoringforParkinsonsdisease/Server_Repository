@@ -1,44 +1,67 @@
 package POJOs;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class Patient extends User {
-    private Doctor doctor;
+public class Patient{
+    private Integer userId;
+    private Integer patientId;
+    private Integer doctorId;
+    private String patientPassword;
     private LocalDate dob;
-    private Set<Report> reports = new HashSet<>();
-    private String doctorId;
-    private String fullName;
+    private List<Report> reports;
 
 
-    // Constructor para cargar paciente desde DB
-    public Patient(String id, String fullName, LocalDate dob, Doctor doctor) {
-        this.id = id;
+
+    public Patient(Integer userId, Integer patientId, Integer doctorId, String patientPassword, LocalDate dob) {
+        this.userId = userId;
+        this.patientId = patientId;
+        this.doctorId = doctorId;
+        this.patientPassword = patientPassword;
         this.dob = dob;
-        this.doctor = doctor;
-        this.fullName = fullName;
     }
-    public Patient(String fullName, LocalDate dob) {
+    public Patient(Integer userId, Integer patientId, Integer doctorId, String patientPassword, LocalDate dob, List<Report> reports) {
+        this.userId = userId;
+        this.patientId = patientId;
+        this.doctorId = doctorId;
+        this.patientPassword = patientPassword;
         this.dob = dob;
-        this.fullName =fullName;
-    }
-
-    /* Constructor para registrar paciente
-    public Patient(String email, String fullName, LocalDate dob, String password, Doctor doctor) {
-        super(email, fullName, "P"); // letra inicial P para pacientes
-        this.dob = dob;
-        this.password = password;
-        this.doctor = doctor;
-    }*/
-
-    // Getters y setters
-    public Doctor getDoctor() {
-        return doctor;
+        this.reports = reports;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(Integer patientId) {
+        this.patientId = patientId;
+    }
+
+    public Integer getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Integer doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public String getPatientPassword() {
+        return patientPassword;
+    }
+
+    public void setPatientPassword(String patientPassword) {
+        this.patientPassword = patientPassword;
     }
 
     public LocalDate getDob() {
@@ -49,17 +72,11 @@ public class Patient extends User {
         this.dob = dob;
     }
 
-    public Integer getId() {
-        return id; // id es String con formato "p123456789"
+    public List<Report> getReports() {
+        return reports;
     }
 
-    public String getDoctorId() {
-        return doctorId;
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
-
-    public void setDoctorId(String doctorId) {
-        this.doctorId = doctorId;
-    }
-
-
 }

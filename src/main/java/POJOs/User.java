@@ -5,31 +5,18 @@ import java.util.List;
 import java.util.Random;
 
 public class User {
-    private static List<String> idList = new ArrayList<>();
-    protected String id;   // protegido para que subclases puedan acceder
+    protected Integer id;   // protegido para que subclases puedan acceder
     protected String email;
-    protected String password;
+    protected String fullName;
 
-    //User para REGISTRARSE
-    public User(String email, String password) {
+    public User(String email, String fullName) {
         this.email = email;
-        this.password = password;
-        idList.add(id);
+        this.fullName = fullName;
     }
-
-    //User para cargar datos desde DB
-    public User(String email, String password) {
+    public User(Integer id, String email, String fullName) {
+        this.id = id;
         this.email = email;
-        this.password = password;
-    }
-
-    private Integer createId() {
-        final int idLength = 9;
-        for (int i = 0; i < idLength; i++) {
-            Random rand = new Random();
-            id += rand.nextInt(10);
-        }
-        return id;
+        this.fullName = fullName;
     }
 
     // Getters
@@ -40,10 +27,24 @@ public class User {
     public String getEmail() {
         return email;
     }
+    public String getFullName() {
+        return fullName;
+    }
 
-    // Setters (opcional, si vas a modificar datos)
+    // Setters
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+
+
 
 }

@@ -11,24 +11,24 @@ import java.util.logging.Logger;
 
 public class Signal {
 
-    private String signalId;
+    private Integer signalId;
     private SignalType signalType;
-    private List<Float> values;
-    private final int samplingRate = 100;
-    private String signalFilename;
+    private List<Integer> values;
+    private Integer samplingRate;
 
 
-    public Signal(SignalType signalType, String signalId){
-        this.values = new LinkedList<>();
+    public Signal(Integer signalId, SignalType signalType, List<Integer> values, Integer samplingRate) {
         this.signalId = signalId;
         this.signalType = signalType;
+        this.values = values;
+        this.samplingRate = samplingRate;
     }
 
-    public String getSignalId() {
+    public Integer getSignalId() {
         return signalId;
     }
 
-    public void setSignalId(String signalId) {
+    public void setSignalId(Integer signalId) {
         this.signalId = signalId;
     }
 
@@ -40,16 +40,20 @@ public class Signal {
         this.signalType = signalType;
     }
 
-    public List<Float> getValues() {
+    public List<Integer> getValues() {
         return values;
     }
 
-    public void setValues(List<Float> values) {
+    public void setValues(List<Integer> values) {
         this.values = values;
     }
 
-    public int getSamplingRate() {
+    public Integer getSamplingRate() {
         return samplingRate;
+    }
+
+    public void setSamplingRate(Integer samplingRate) {
+        this.samplingRate = samplingRate;
     }
 
     public String valuesToString() {
