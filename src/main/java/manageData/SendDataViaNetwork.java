@@ -59,4 +59,12 @@ public class SendDataViaNetwork {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending doctor", e);
         }
     }
+    public void releaseResources() {
+        try {
+            dataOutputStream.close();
+        } catch (IOException ex) {
+            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+
 }

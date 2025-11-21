@@ -69,4 +69,15 @@ public class ReceiveDataViaNetwork {
             return null;
         }
     }
+    public void releaseResources() {
+        try {
+            if (dataInputStream != null) {
+                dataInputStream.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al liberar los recursos: " + e.getMessage());
+            e.printStackTrace();
+            }
+    }
+
 }

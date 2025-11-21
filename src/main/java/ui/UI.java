@@ -11,6 +11,8 @@ import managers.PatientManager;
 import managers.DoctorManager;
 import managers.ReportManager;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,24 +22,41 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UI {
+    private Connection connection;
+    private JDBCConnection jdbcConnection;
 
-    private Socket socket;
-    private ManagerJDBC manager;
-    private ReceiveDataViaNetwork receiveDataViaNetwork;
-    private SendDataViaNetwork sendDataViaNetwork;
-    private Scanner scanner;
 
-    public UI(Socket socket, ManagerJDBC manager, ReceiveDataViaNetwork receiveData, SendDataViaNetwork sendData) {
-        this.socket = socket;
-        this.manager = manager;
-        this.receiveDataViaNetwork = receiveData;
-        this.sendDataViaNetwork = sendData;
-        this.scanner = new Scanner(System.in);
+    public void run(){
+        try{
+            System.out.println("Socket acceptected");
+            int message = connection.getReceiveViaNetwork().receiveInt();
+            if(message == 1){
+                connection.getSendViaNetwork().sendString("PATIENT");
+                patientMainMenu();
+            } else if(message == 2){
+                connection.getSendViaNetwork().sendString("DOCTOR");
+                doctorMainMenu();
+            }else {
+                connection.getSendViaNetwork().sendString("INVALID");
+            }
+
+
+        }catch(IOException exception){
+            System.out.println("Error during communication: " + exception.getMessage());
+        }finally {
+            connection.releaseResources();
+        }
+
+    }
+    public void startConnection(){
     }
 
-    public UI(Socket socket, ManagerJDBC manager){
-        this.socket = socket;
-        this.manager = manager;
+
+    private ManagerJDBC manager;
+
+    public UI(ServerSocket serverSocket, ManagerJDBC manager) {
+        this.connection = new Connection(serverSocket);
+        this.jdbcConnection = new JDBCConnection(manager);
     }
 
     // ---------------------- MENÚ PRINCIPAL ----------------------
