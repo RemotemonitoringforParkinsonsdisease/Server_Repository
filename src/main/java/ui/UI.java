@@ -1,10 +1,7 @@
 package ui;
 
+import POJOs.*;
 import jdbcs.ManagerJDBC;
-import POJOs.Patient;
-import POJOs.Doctor;
-import POJOs.Report;
-import POJOs.Symptoms;
 import manageData.ReceiveDataViaNetwork;
 import manageData.SendDataViaNetwork;
 import managers.PatientManager;
@@ -24,6 +21,13 @@ import java.util.Scanner;
 public class UI {
     private Connection connection;
     private JDBCConnection jdbcConnection;
+    private ManagerJDBC manager;
+
+    public UI(Socket socket, ManagerJDBC manager) {
+        this.manager = manager;
+        this.connection = new Connection(socket);
+        this.jdbcConnection = new JDBCConnection(manager);
+    }
 
 
     public void run(){
@@ -39,24 +43,14 @@ public class UI {
             }else {
                 connection.getSendViaNetwork().sendString("INVALID");
             }
-
-
-        }catch(IOException exception){
-            System.out.println("Error during communication: " + exception.getMessage());
+        }catch(IOException e){
+            System.out.println("Error during communication: " + e.getMessage());
         }finally {
             connection.releaseResources();
         }
 
     }
     public void startConnection(){
-    }
-
-
-    private ManagerJDBC manager;
-
-    public UI(ServerSocket serverSocket, ManagerJDBC manager) {
-        this.connection = new Connection(serverSocket);
-        this.jdbcConnection = new JDBCConnection(manager);
     }
 
     // ---------------------- MENÚ PRINCIPAL ----------------------
@@ -78,60 +72,60 @@ public class UI {
         }
     }
 
-    // ---------------------- MENÚ DE PACIENTE ----------------------
     private void patientMainMenu() {
-        boolean patientMenu = true;
-        while (patientMenu) {
-            System.out.println("Patient Menu:");
-            System.out.println("1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Back");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choice) {
-                case 1 -> registerPatient();
-                case 2 -> {
-                    Patient patient = loginPatient();
-                    if (patient != null) patientLoggedInMenu(patient);
-                }
-                case 3 -> patientMenu = false;
-                default -> System.out.println("Option invalid, try again.");
-            }
+       int option = connection.getReceiveViaNetwork().receiveInt();
+       switch (option){
+           case 1: registerPatient(); break;
+           case 2: loginPatient(); break;
+           case 3: exitMenu(); break;
+       }
+    }
+    private void doctorMainMenu() {
+        int option = connection.getReceiveViaNetwork().receiveInt();
+        switch (option){
+            case 1: registerDoctor(); break;
+            case 2: loginDoctor(); break;
+            case 3: exitMenu(); break;
         }
     }
 
+/**/
     public void registerPatient() {
-        sendDataViaNetwork.sendString("Enter email:");
-        String email = receiveDataViaNetwork.receiveString(); // leer desde socket
-        if (manager.getPatientJDBC().getPatientByEmail(email) != null) {
-            sendDataViaNetwork.sendString("Email already exists.");
-            return;
+        String email = connection.getReceiveViaNetwork().receiveString(); // email
+        if (manager.getUserJDBC().getUserByEmail(email) != null) {
+
+            System.out.println("User already exists");
+            //userId = cogerElIDDeUsuario existente
+
+            if(manager.getPatientJDBC().getPatientByUserId(userID) != null){
+                System.out.println("Patient already exists");
+                connection.getSendViaNetwork().sendString("EMAIL ERROR");
+                return;
+            }
+            connection.getSendViaNetwork().sendString("EMAIL OK");
+        } else{
+            manager.getUserJDBC().addUser(new User(email));
         }
+        Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
+        Patient patient = connection.getReceiveViaNetwork().receiveRegisteredPatient();
+        patient.setUserId(userId);
+        //TODO:Insertamos patient en DB
+        connection.getReceiveViaNetwork().receiveString().equals("PATIENT REGISTERED");
 
-        sendDataViaNetwork.sendString("Enter full name:");
-        String fullName = receiveDataViaNetwork.receiveString();
 
-        sendDataViaNetwork.sendString("Enter date of birth (yyyy-MM-dd):");
-        LocalDate dob = LocalDate.parse(receiveDataViaNetwork.receiveString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        sendDataViaNetwork.sendString("Enter password:");
-        String password = receiveDataViaNetwork.receiveString();
-
-        Patient patient = new Patient(email, fullName, dob, password, "P");
-
-        // Asignar doctor aleatorio
-        Doctor doctor = manager.assignRandomDoctor();
-        if (doctor == null) {
-            sendDataViaNetwork.sendString("No doctors available. Cannot register patient.");
-            return;
-        }
-        patient.setDoctor(doctor);
-
-        manager.getPatientJDBC().addPatient(patient);
-        sendDataViaNetwork.sendString("Patient registered successfully with doctor: " + doctor.getFullName());
     }
+    public void patientLoggedInMenu(Patient patient) {
 
+        Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(patient.getUserId());
+        patient.setPatientId(patientId);
+        System.out.println("Sending patient to app");
+        if(connection.getReceiveViaNetwork().receiveString().equals("PATIENT LOGGED")){
+            connection.getSendViaNetwork().sendNewPatient(patient);
+            System.out.println("Patient logged successfully.");
+
+        }
+    }
+/**/
 
 
     private Patient loginPatient() {
@@ -231,24 +225,34 @@ public class UI {
         }
     }
 
+
+/**/
     private void registerDoctor() {
-        System.out.println("Enter email:");
-        String email = scanner.nextLine();
-        if (manager.getDoctorJDBC().getDoctorByEmail(email) != null) {
-            System.out.println("Email already exists.");
-            return;
+        String email = connection.getReceiveViaNetwork().receiveString(); // email
+
+        if (manager.getUserJDBC().getUserByEmail(email) != null) {
+
+            System.out.println("User already exists");
+            //userId = cogerElIDDeUsuario existente
+
+            if(manager.getDoctorJDBC().getDoctorByUserId(userID) != null){
+                System.out.println("Doctor already exists");
+                connection.getSendViaNetwork().sendString("EMAIL ERROR");
+                return;
+            }
+            connection.getSendViaNetwork().sendString("EMAIL OK");
+        } else{
+            manager.getUserJDBC().addUser(new User(email));
         }
-
-        System.out.println("Enter full name:");
-        String fullName = scanner.nextLine();
-        System.out.println("Enter date of birth (yyyy-MM-dd):");
-        LocalDate dob = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        System.out.println("Enter password:");
-        String password = scanner.nextLine();
-
-        Doctor doctor = new Doctor(email, password, fullName, dob, null);
-        manager.getDoctorJDBC().addDoctor(doctor);
-        System.out.println("Doctor registered successfully.");
+        Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
+        Doctor doctor = connection.getReceiveViaNetwork().receiveRegisteredDoctor();
+        doctor.setUserId(userId);
+        //TODO: Insertamos doctor en DB
+        Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+        doctor.setDoctorId(doctorId);
+        System.out.println("Sending doctor to app");
+        doctor.setPatients(new ArrayList<>());
+        connection.getSendViaNetwork().sendLoggedDoctor(doctor);
     }
 
     private Doctor loginDoctor() {
@@ -287,6 +291,8 @@ public class UI {
             }
         }
     }
+
+    /**/
 
     private void seePatientList(Doctor doctor) {
         List<Patient> patients = manager.getPatientJDBC().getPatientsByDoctor(doctor.getId());

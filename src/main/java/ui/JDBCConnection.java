@@ -1,6 +1,7 @@
 package ui;
 
 import jdbcs.*;
+//TODO: Sobra
 
 public class JDBCConnection {
     private DoctorJDBC doctorJDBC;

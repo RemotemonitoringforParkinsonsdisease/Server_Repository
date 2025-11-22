@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class Doctor{
+    private String fullName;
     private Integer userId;
     private Integer doctorId;
     private String doctorPassword;
@@ -14,6 +15,11 @@ public class Doctor{
     public Doctor(Integer userId, Integer doctorId, String doctorPassword, LocalDate dob) {
         this.userId = userId;
         this.doctorId = doctorId;
+        this.doctorPassword = doctorPassword;
+        this.dob = dob;
+    }
+    public Doctor(String fullname, String doctorPassword, LocalDate dob) {
+        this.fullName = fullname;
         this.doctorPassword = doctorPassword;
         this.dob = dob;
     }
@@ -64,5 +70,13 @@ public class Doctor{
 
     public void setPatients(List<Patient> patients) {
         this.patients = patients;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

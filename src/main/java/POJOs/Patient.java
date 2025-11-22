@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Patient{
+    private String fullName;
     private Integer userId;
     private Integer patientId;
     private Integer doctorId;
@@ -16,20 +17,27 @@ public class Patient{
 
 
 
-    public Patient(Integer userId, Integer patientId, Integer doctorId, String patientPassword, LocalDate dob) {
+    public Patient(String fullName, Integer userId, Integer patientId, Integer doctorId, String patientPassword, LocalDate dob) {
+         this.fullName = fullName;
         this.userId = userId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.patientPassword = patientPassword;
         this.dob = dob;
     }
-    public Patient(Integer userId, Integer patientId, Integer doctorId, String patientPassword, LocalDate dob, List<Report> reports) {
+    public Patient(String fullName,Integer userId, Integer patientId, Integer doctorId, String patientPassword, LocalDate dob, List<Report> reports) {
+        this.fullName = fullName;
         this.userId = userId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.patientPassword = patientPassword;
         this.dob = dob;
         this.reports = reports;
+    }
+    public Patient(String password, String fullName, LocalDate dob) {
+        this.fullName = fullName;
+        this.dob = dob;
+        this.patientPassword = password;
     }
 
     public Integer getUserId() {
@@ -78,5 +86,13 @@ public class Patient{
 
     public void setReports(List<Report> reports) {
         this.reports = reports;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

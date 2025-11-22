@@ -31,10 +31,22 @@ public class Main {
 
         }
 
-
-
-
     }
+    private void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
+        try{
+            UI ui = new UI(socket, jdbcManager);
+            ui.run();
+        } catch(Exception e){
+            System.out.println("Error during client handling: " + e.getMessage());
+        } finally{
+            try{
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("Error closing socket: " + e.getMessage());
+            }
+        }
+    }
+
     private static void logIn(ManagerJDBC manager, ServerSocket serverSocket) {
         //JDBCRole roleManager = new JDBCRole(manager);
         //JDBCUser userManager = new JDBCUser(manager, roleManager);
@@ -44,10 +56,10 @@ public class Main {
                 System.out.println("\n\n      LOG IN\n");
                 String email;
                 do {
-                    email = Utilities.readString("Email: ");
-                } while (!Utilities.checkEmail(email));
+                    email = utilities.Utilities.readString("Email: ");
+                } while (!utilities.Utilities.checkEmail(email));
 
-                String psw = Utilities.readString("Enter your password: ");
+                String psw = utilities.Utilities.readString("Enter your password: ");
                 byte[] password = EncryptPassword.encryptPassword(psw);
 
                 if (password != null) {

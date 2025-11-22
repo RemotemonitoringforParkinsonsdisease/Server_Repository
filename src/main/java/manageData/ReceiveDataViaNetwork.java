@@ -56,18 +56,31 @@ public class ReceiveDataViaNetwork {
         }
     }
 
-    public Doctor receiveDoctor() {
+    public Doctor receiveRegisteredDoctor() {
         try {
-            String email = receiveString();
             String fullName = receiveString();
+            String password = receiveString();
             String date = receiveString();
             LocalDate dob = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String password = receiveString();
-            return new Doctor(email, password, fullName, dob, null);
+
+            return new Doctor(fullName, password, dob);
         } catch (Exception e) {
             Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, "Error receiving doctor", e);
             return null;
         }
+    }
+    public Patient receiveRegisteredPatient(){
+        Patient patient = null;
+        try{
+            String patientPassword = receiveString();
+            String fullName = receiveString();
+            String date = receiveString();
+            LocalDate dob = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            patient = new Patient(patientPassword,fullName,dob);
+        } catch(Exception e){
+            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, "Error receiving registered patient", e);
+        }
+        return patient;
     }
     public void releaseResources() {
         try {

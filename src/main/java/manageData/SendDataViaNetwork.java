@@ -2,10 +2,12 @@ package manageData;
 
 import POJOs.Patient;
 import POJOs.Doctor;
+import POJOs.Report;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,25 +40,79 @@ public class SendDataViaNetwork {
         }
     }
 
-    public void sendPatient(Patient patient) {
+    public void sendNewPatient(Patient patient) {
         try {
-            sendString(patient.getEmail());
+            sendInt(patient.getPatientId());
+            sendInt(patient.getUserId());
+            sendInt(patient.getDoctorId());
+            sendString(patient.getPatientPassword());
             sendString(patient.getFullName());
             sendString(patient.getDob().toString());
-            sendString(patient.getPassword());
         } catch (Exception e) {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending patient", e);
         }
     }
 
-    public void sendDoctor(Doctor doctor) {
+    public void sendLoggedDoctor(Doctor doctor) {
         try {
-            sendString(doctor.getEmail());
+            sendInt(doctor.getUserId());
+            sendInt(doctor.getDoctorId());
             sendString(doctor.getFullName());
+            sendString(doctor.getDoctorPassword());
             sendString(doctor.getDob().toString());
-            sendString(doctor.getPassword());
+            sendPatients(doctor.getPatients());
         } catch (Exception e) {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending doctor", e);
+        }
+    }
+    public void sendPatients(List<Patient> patients) {
+        sendInt(patients.size());
+        for(Patient p : patients){
+            sendPatientToDoctor(p);
+        }
+    }
+    public void sendPatientToDoctor(Patient patient) {
+        try {
+            sendInt(patient.getPatientId());
+            sendString(patient.getDob().toString());
+            sendString(patient.getFullName());
+        } catch (Exception e) {
+            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending patient to doctor", e);
+        }
+    }
+
+    public void sendLoggedInDoctor(Doctor doctor) {
+        try {
+            sendInt(doctor.getUserId());
+            sendInt(doctor.getDoctorId());
+            sendString(doctor.getFullName());
+            sendString(doctor.getDoctorPassword());
+            sendString(doctor.getDob().toString());
+            sendPatients(doctor.getPatients());
+        } catch (Exception e) {
+            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending doctor", e);
+        }
+    }
+    public void sendReports(List<Report> reports) throws IOException{
+        sendInt(reports.size());
+        for (Report r : reports) {
+            dataOutputStream.writeInt(r.getReportId());
+            dataOutputStream.writeInt(r.getPatientId());
+            dataOutputStream.writeUTF(r.getReportDate().toString());
+            sendSymptoms(r.getSymptoms());
+            sendSignals(r.getSignals());
+            dataOutputStream.writeUTF(r.getPatientObservation());
+            dataOutputStream.writeUTF(r.getDoctorObservation());
+            dataOutputStream.flush();
+        }
+    }
+    public void sendSignals(List<Signal> signals) throws IOException{
+        dataOutputStream.writeInt(signals.size());
+
+        for (Signal signal : signals) {
+            dataOutputStream.writeInt(signal.getSignalId());
+            dataOutputStream.writeUTF(signal.getSignalType().name());
+            sendListOfIntegerValues(signal.getValues());
         }
     }
     public void releaseResources() {

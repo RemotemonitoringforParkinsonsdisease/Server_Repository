@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 public class User {
-    protected Integer id;   // protegido para que subclases puedan acceder
-    protected String email;
-    protected String fullName;
+    private Integer id;   // protegido para que subclases puedan acceder
+    private String email;
 
     public User(String email, String fullName) {
         this.email = email;
