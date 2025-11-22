@@ -1,8 +1,6 @@
 package manageData;
 
-import POJOs.Patient;
-import POJOs.Doctor;
-import POJOs.Report;
+import POJOs.*;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -40,7 +38,7 @@ public class SendDataViaNetwork {
         }
     }
 
-    public void sendNewPatient(Patient patient) {
+    public void sendLoggedPatient(Patient patient) {
         try {
             sendInt(patient.getPatientId());
             sendInt(patient.getUserId());
@@ -48,6 +46,9 @@ public class SendDataViaNetwork {
             sendString(patient.getPatientPassword());
             sendString(patient.getFullName());
             sendString(patient.getDob().toString());
+            sendReports(patient.getReports());
+            //Añadir pasar reports
+            //Pasar User en seeMyInfo
         } catch (Exception e) {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending patient", e);
         }
@@ -105,6 +106,17 @@ public class SendDataViaNetwork {
             dataOutputStream.writeUTF(r.getDoctorObservation());
             dataOutputStream.flush();
         }
+    }
+    public void sendSymptoms(List<Symptoms> symptoms) throws IOException{
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < symptoms.size(); i++) {
+            sb.append(symptoms.get(i).name());
+            if (i < symptoms.size() - 1) {
+                sb.append(",");  // Añadir coma excepto en el último
+            }
+        }
+        dataOutputStream.writeUTF(sb.toString());
     }
     public void sendSignals(List<Signal> signals) throws IOException{
         dataOutputStream.writeInt(signals.size());

@@ -87,6 +87,12 @@ public class Patient{
     public void setReports(List<Report> reports) {
         this.reports = reports;
     }
+    public void addReport(Report report) {
+        if (this.reports == null) {
+            this.reports = new ArrayList<>();
+        }
+        this.reports.add(report);
+    }
 
     public String getFullName() {
         return fullName;

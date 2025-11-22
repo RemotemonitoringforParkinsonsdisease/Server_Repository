@@ -36,7 +36,7 @@ public class UI {
             int message = connection.getReceiveViaNetwork().receiveInt();
             if(message == 1){
                 connection.getSendViaNetwork().sendString("PATIENT");
-                patientMainMenu();
+                patientPreLoggedMenu();
             } else if(message == 2){
                 connection.getSendViaNetwork().sendString("DOCTOR");
                 doctorMainMenu();
@@ -53,30 +53,12 @@ public class UI {
     public void startConnection(){
     }
 
-    // ---------------------- MENÚ PRINCIPAL ----------------------
-    public void mainMenu() {
-        boolean running = true;
-        while (running) {
-            System.out.println("1. Patient");
-            System.out.println("2. Doctor");
-            System.out.println("3. Exit");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // limpiar buffer
 
-            switch (choice) {
-                case 1 -> patientMainMenu();
-                case 2 -> doctorMainMenu();
-                case 3 -> running = false;
-                default -> System.out.println("Option invalid, try again.");
-            }
-        }
-    }
-
-    private void patientMainMenu() {
+    private void patientPreLoggedMenu() {
        int option = connection.getReceiveViaNetwork().receiveInt();
        switch (option){
            case 1: registerPatient(); break;
-           case 2: loginPatient(); break;
+           case 2: logInPatient(); break;
            case 3: exitMenu(); break;
        }
     }
@@ -95,7 +77,7 @@ public class UI {
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
             System.out.println("User already exists");
-            //userId = cogerElIDDeUsuario existente
+            //TODO userId = cogerElIDDeUsuario existente
 
             if(manager.getPatientJDBC().getPatientByUserId(userID) != null){
                 System.out.println("Patient already exists");
@@ -107,122 +89,43 @@ public class UI {
             manager.getUserJDBC().addUser(new User(email));
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
+        int doctorId = manager.getDoctorJDBC().getRandomDoctorId(); //TODO
         Patient patient = connection.getReceiveViaNetwork().receiveRegisteredPatient();
         patient.setUserId(userId);
         //TODO:Insertamos patient en DB
-        connection.getReceiveViaNetwork().receiveString().equals("PATIENT REGISTERED");
+        patientLoggedInMenu(patient);
 
 
     }
     public void patientLoggedInMenu(Patient patient) {
-
-        Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(patient.getUserId());
-        patient.setPatientId(patientId);
-        System.out.println("Sending patient to app");
-        if(connection.getReceiveViaNetwork().receiveString().equals("PATIENT LOGGED")){
-            connection.getSendViaNetwork().sendNewPatient(patient);
-            System.out.println("Patient logged successfully.");
-
+        connection.getSendViaNetwork().sendLoggedPatient(patient);
+        int option = connection.getReceiveViaNetwork().receiveInt();
+        switch (option){
+            case 1: seePatientInfo(patient); break;
+            case 2: createReport(patient); break;
+            case 3: exitMenu(); break;
         }
     }
-/**/
-
-
-    private Patient loginPatient() {
-        System.out.println("Enter email:");
-        String email = receiveDataViaNetwork.receiveString();  // leer desde socket
-        Patient patient = manager.getPatientJDBC().getPatientByEmail(email);
-        if (patient == null) {
-            System.out.println("Email not found.");
-            sendDataViaNetwork.sendString("Email not found"); // responder al cliente
-            return null;
+    private void seePatientInfo(Patient patient) {
+        User user = manager.getUserJDBC().getUserById(patient.getUserId());
+        connection.getSendViaNetwork().sendUser(user);
+        if(patient.getDoctorId() != null){
+            Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(patient.getDoctorId());
+            connection.getSendViaNetwork().sendString(doctor.getFullName()); //SOLO SE MANDA NOMBRE DEL DOCTOR
+        } else{
+            connection.getSendViaNetwork().sendString("NO DOCTOR");
         }
-
-        System.out.println("Enter password:");
-        String password = receiveDataViaNetwork.receiveString(); // leer desde socket
-        if (!patient.getPassword().equals(password)) {
-            System.out.println("Incorrect password.");
-            sendDataViaNetwork.sendString("Incorrect password"); // responder al cliente
-            return null;
-        }
-
-        System.out.println("Login successful.");
-        sendDataViaNetwork.sendString("Login successful"); // responder al cliente
-        return patient;
+        patientLoggedInMenu(patient);
     }
-
-
-    private void patientLoggedInMenu(Patient patient) {
-        boolean running = true;
-        while (running) {
-            System.out.println("Patient Logged In Menu:");
-            System.out.println("1. My Information");
-            System.out.println("2. See Reports");
-            System.out.println("3. Initiate Report");
-            System.out.println("4. Logout");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choice) {
-                case 1 -> seeMyInformation(patient);
-                case 2 -> seeReports(patient);
-                case 3 -> initiateReport(patient);
-                case 4 -> running = false;
-                default -> System.out.println("Option invalid.");
-            }
-        }
+    private void createReport(Patient patient) {
+        Report report = connection.getReceiveViaNetwork().receiveReport();
+        //TODO: Guardad en DB
+        patient.addReport(report);
+        //TODO: Actualizar patient en DB
+        connection.getSendViaNetwork().sendString("REPORT ADDED");
     }
-
-    private void seeMyInformation(Patient patient) {
-        System.out.println("Full Name: " + patient.getFullName());
-        System.out.println("DOB: " + patient.getDob());
-        System.out.println("Email: " + patient.getEmail());
-        System.out.println("Password: " + patient.getPassword());
-    }
-
-    private void seeReports(Patient patient) {
-        List<Report> reports = manager.getReportJDBC().getReportsByPatient(patient.getId());
-        if (reports.isEmpty()) {
-            System.out.println("No reports found.");
-        } else {
-            for (Report r : reports) {
-                System.out.println("Report ID: " + r.getReportId());
-                System.out.println("Patient Observation: " + r.getPatientObservation());
-                System.out.println("Doctor Observation: " + r.getDoctorObservation());
-                System.out.println("-----------");
-            }
-        }
-    }
-
-    private void initiateReport(Patient patient) {
-        Report report = new Report(patient, LocalDate.now(), "", "");
-        // Aquí llamar a métodos para: recordSignals(report), chooseSymptoms(report), addObservations(report)
-        // Una vez completado:
-        manager.getReportJDBC().addReport(report);
-        System.out.println("Report sent successfully.");
-    }
-
-    // ---------------------- MENÚ DE DOCTOR ----------------------
-    private void doctorMainMenu() {
-        boolean doctorMenu = true;
-        while (doctorMenu) {
-            System.out.println("Doctor Menu:");
-            System.out.println("1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Back");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choice) {
-                case 1 -> registerDoctor();
-                case 2 -> {
-                    Doctor doctor = loginDoctor();
-                    if (doctor != null) doctorLoggedInMenu(doctor);
-                }
-                case 3 -> doctorMenu = false;
-                default -> System.out.println("Option invalid.");
-            }
-        }
+    private void exitMenu() {
+        //TODO
     }
 
 
@@ -255,110 +158,79 @@ public class UI {
         connection.getSendViaNetwork().sendLoggedDoctor(doctor);
     }
 
-    private Doctor loginDoctor() {
-        System.out.println("Enter email:");
-        String email = scanner.nextLine();
-        Doctor doctor = manager.getDoctorJDBC().getDoctorByEmail(email);
-        if (doctor == null) {
-            System.out.println("Email not found.");
+    private void loginDoctor() {
+        String doctorEmail = connection.getReceiveViaNetwork().receiveString();
+
+        if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) { //Si existe el usuario
+
+            Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
+
+            if(manager.getDoctorJDBC().getDoctorIdByUserId() != null){ //Si existe el doctor
+
+                Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+                connection.getSendViaNetwork().sendString("EMAIL OK");
+
+                String password = connection.getReceiveViaNetwork().receiveString();
+                if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
+                    connection.getSendViaNetwork().sendString("PASSWORD OK");
+
+                    //TODO: GetDoctor From User //userId, doctorId, fullname, password, dob, patients
+                    Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
+                    System.out.println(doctor.toString()); //TODO
+                    doctorLoggedInMenu(doctor);
+
+                } else{
+                    connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                    return null;
+                }
+            } else{
+                connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
+                return null;
+            }
+        } else{
+            connection.getSendViaNetwork().sendString("NO USER FOUND");
             return null;
         }
 
-        System.out.println("Enter password:");
-        String password = scanner.nextLine();
-        if (!doctor.getPassword().equals(password)) {
-            System.out.println("Incorrect password.");
-            return null;
-        }
-
-        System.out.println("Login successful.");
-        return doctor;
     }
 
     private void doctorLoggedInMenu(Doctor doctor) {
-        boolean running = true;
-        while (running) {
-            System.out.println("Doctor Logged In Menu:");
-            System.out.println("1. See Patient List");
-            System.out.println("2. Logout");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choice) {
-                case 1 -> seePatientList(doctor);
-                case 2 -> running = false;
-                default -> System.out.println("Option invalid.");
-            }
-        }
+        connection.getSendViaNetwork().sendLoggedDoctor(doctor);
+        int option = connection.getReceiveViaNetwork().receiveInt();
     }
+    private void logInPatient(){
+        String patientEmail = connection.getReceiveViaNetwork().receiveString();
 
-    /**/
+        if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
 
-    private void seePatientList(Doctor doctor) {
-        List<Patient> patients = manager.getPatientJDBC().getPatientsByDoctor(doctor.getId());
-        for (Patient p : patients) {
-            System.out.println("ID: " + p.getId() + " Name: " + p.getFullName() + " Email: " + p.getEmail());
-            List<Report> reports = manager.getReportJDBC().getReportsByPatient(p.getId());
-            for (Report r : reports) {
-                System.out.println("   Report ID: " + r.getReportId());
-                System.out.println("   Patient Obs: " + r.getPatientObservation());
-                System.out.println("   Doctor Obs: " + r.getDoctorObservation());
-            }
-        }
-    }
+            Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
 
-    // Inicia la grabación de señales
-    private void recordSignals(Report report) {
-        // Aquí se simula la grabación de señales; si tuvieras integración con Bitalino, pondrías la lógica real
-        System.out.println("Recording signals...");
-        // Por ejemplo, puedes inicializar señales vacías
-        report.setSignals(new HashSet<>()); // Vacío por ahora, luego puedes agregar Signal reales
-        System.out.println("Signals recorded successfully.");
-    }
+            if(manager.getPatientJDBC().getPatientIdByUserId() != null){ //Si existe el paciente
 
-    private void addObservations(Report report) {
-        System.out.println("Enter your observations for this report:");
-        String obs = scanner.nextLine();
-        report.setPatientObservation(obs);
-    }
+                Integer patirntId = manager.getDoctorJDBC().getPatientIdByUserId(userId);
+                connection.getSendViaNetwork().sendString("EMAIL OK");
 
-    private void chooseSymptoms(Report report) {
-        List<Symptoms> chosenSymptoms = new ArrayList<>();
-        boolean done = false;
+                String password = connection.getReceiveViaNetwork().receiveString();
+                if(manager.getPatientDoctorJDBC().getPasswordByPatientId(patientId).equals(password)){
+                    connection.getSendViaNetwork().sendString("PASSWORD OK");
 
-        Symptoms[] allSymptoms = Symptoms.values();
+                    //TODO: Get Patient From User //userId, doctorId, fullname, password, dob, patients
+                    Patient patient = manager.getPatientJDBC().getPatientByPatientId(patientId);
+                    System.out.println(patient.toString()); //TODO
+                    patientLoggedInMenu(patient);
 
-        while (!done) {
-            System.out.println("Select a symptom (enter 0 to finish):");
-            for (int i = 0; i < allSymptoms.length; i++) {
-                System.out.println((i + 1) + ". " + allSymptoms[i].name());
-            }
-
-            int choice;
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input, try again.");
-                continue;
-            }
-
-            if (choice == 0) {
-                done = true;
-            } else if (choice >= 1 && choice <= allSymptoms.length) {
-                Symptoms selected = allSymptoms[choice - 1];
-                if (!chosenSymptoms.contains(selected)) {
-                    chosenSymptoms.add(selected);
-                    System.out.println(selected.name() + " added.");
-                } else {
-                    System.out.println(selected.name() + " already selected.");
+                } else{
+                    connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                    return null;
                 }
-            } else {
-                System.out.println("Invalid choice, try again.");
+            } else{
+                connection.getSendViaNetwork().sendString("NO PATIENT FOUND");
+                return null;
             }
+        } else{
+            connection.getSendViaNetwork().sendString("NO USER FOUND");
+            return null;
         }
 
-        report.setSymptoms(chosenSymptoms);
     }
-
-
 }
