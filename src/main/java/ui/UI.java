@@ -39,7 +39,7 @@ public class UI {
                 patientPreLoggedMenu();
             } else if(message == 2){
                 connection.getSendViaNetwork().sendString("DOCTOR");
-                doctorMainMenu();
+                doctorPreLoggedMenu();
             }else {
                 connection.getSendViaNetwork().sendString("INVALID");
             }
@@ -51,8 +51,8 @@ public class UI {
 
     }
     public void startConnection(){
+        //TODO DOOOOOOOOOO
     }
-
 
     private void patientPreLoggedMenu() {
        int option = connection.getReceiveViaNetwork().receiveInt();
@@ -62,7 +62,7 @@ public class UI {
            case 3: exitMenu(); break;
        }
     }
-    private void doctorMainMenu() {
+    private void doctorPreLoggedMenu() {
         int option = connection.getReceiveViaNetwork().receiveInt();
         switch (option){
             case 1: registerDoctor(); break;
