@@ -20,13 +20,11 @@ import java.util.Scanner;
 
 public class UI {
     private Connection connection;
-    private JDBCConnection jdbcConnection;
     private ManagerJDBC manager;
 
     public UI(Socket socket, ManagerJDBC manager) {
         this.manager = manager;
         this.connection = new Connection(socket);
-        this.jdbcConnection = new JDBCConnection(manager);
     }
 
 
@@ -43,7 +41,7 @@ public class UI {
             }else {
                 connection.getSendViaNetwork().sendString("INVALID");
             }
-        }catch(IOException e){
+        }catch(Exception e){
             System.out.println("Error during communication: " + e.getMessage());
         }finally {
             connection.releaseResources();
@@ -86,7 +84,7 @@ public class UI {
             }
             connection.getSendViaNetwork().sendString("EMAIL OK");
         } else{
-            manager.getUserJDBC().addUser(new User(email));
+            manager.getUserJDBC().addUser(email);
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         int doctorId = manager.getDoctorJDBC().getRandomDoctorId(); //TODO
@@ -145,7 +143,7 @@ public class UI {
             }
             connection.getSendViaNetwork().sendString("EMAIL OK");
         } else{
-            manager.getUserJDBC().addUser(new User(email));
+            manager.getUserJDBC().addUser(email);
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         Doctor doctor = connection.getReceiveViaNetwork().receiveRegisteredDoctor();
@@ -227,7 +225,7 @@ public class UI {
 
             if(manager.getPatientJDBC().getPatientIdByUserId() != null){ //Si existe el paciente
 
-                Integer patirntId = manager.getDoctorJDBC().getPatientIdByUserId(userId);
+                Integer patientId = manager.getDoctorJDBC().getPatientIdByUserId(userId);
                 connection.getSendViaNetwork().sendString("EMAIL OK");
 
                 String password = connection.getReceiveViaNetwork().receiveString();
@@ -241,15 +239,12 @@ public class UI {
 
                 } else{
                     connection.getSendViaNetwork().sendString("PASSWORD ERROR");
-                    return null;
                 }
             } else{
                 connection.getSendViaNetwork().sendString("NO PATIENT FOUND");
-                return null;
             }
         } else{
             connection.getSendViaNetwork().sendString("NO USER FOUND");
-            return null;
         }
 
     }
