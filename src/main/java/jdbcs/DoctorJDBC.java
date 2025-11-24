@@ -41,6 +41,7 @@ public class DoctorJDBC implements DoctorManager {
         }
     }
 
+
     @Override
     public Doctor getDoctorById(String id) { // antes era int
         String sql = "SELECT * FROM Doctor WHERE doctor_id=?";
@@ -62,6 +63,8 @@ public class DoctorJDBC implements DoctorManager {
         }
         return null;
     }
+
+
 
 
     @Override
@@ -108,3 +111,5 @@ public class DoctorJDBC implements DoctorManager {
         return null;
     }
 }
+
+

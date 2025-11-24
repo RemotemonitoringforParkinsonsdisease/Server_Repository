@@ -26,7 +26,7 @@ public class SignalJDBC implements SignalManager {
         }
     }
 
-    /*
+
     @Override
     public Signal getSignalById(String signalId) {
         String sql = "SELECT * FROM Signal WHERE signal_id = ?";
@@ -47,6 +47,6 @@ public class SignalJDBC implements SignalManager {
         }
         return null;
     }
-
-     */
 }
+
+
