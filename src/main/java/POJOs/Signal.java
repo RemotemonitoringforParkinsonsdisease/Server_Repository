@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 public class Signal {
 
     private Integer signalId;
+    private Integer reportId;
     private SignalType signalType;
     private List<Integer> values;
     private Integer samplingRate;
@@ -19,6 +20,13 @@ public class Signal {
 
     public Signal(Integer signalId, SignalType signalType, List<Integer> values, Integer samplingRate) {
         this.signalId = signalId;
+        this.signalType = signalType;
+        this.values = values;
+        this.samplingRate = samplingRate;
+    }
+    public Signal(Integer signalId, Integer reportId, SignalType signalType, List<Integer> values, Integer samplingRate) {
+        this.signalId = signalId;
+        this.reportId = reportId;
         this.signalType = signalType;
         this.values = values;
         this.samplingRate = samplingRate;
@@ -54,6 +62,14 @@ public class Signal {
 
     public void setSamplingRate(Integer samplingRate) {
         this.samplingRate = samplingRate;
+    }
+
+    public Integer getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(Integer reportId) {
+        this.reportId = reportId;
     }
 
     public String valuesToString() {
