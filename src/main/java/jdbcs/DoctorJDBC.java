@@ -29,13 +29,12 @@ public class DoctorJDBC implements DoctorManager {
     }
 
     public void addDoctor(Doctor doctor) {
-        String sql = "INSERT INTO Doctor (doctor_id, full_name, dob, email, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Doctor (doctor_id,user_id, full_name, dob) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, doctor.getDoctorId());  // tu id aleatorio con "d" al inicio
-            stmt.setString(2, doctor.getFullName());
-            stmt.setString(3, doctor.getDob().toString());
-            stmt.setString(4, doctor.getEmail());
-            stmt.setString(5, doctor.getPassword());
+            stmt.setString(2, doctor.getUserId());
+            stmt.setString(3, doctor.getFullName());
+            stmt.setString(4, doctor.getDob().toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
