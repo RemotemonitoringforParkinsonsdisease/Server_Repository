@@ -181,23 +181,43 @@ public class UI {
 
                 } else{
                     connection.getSendViaNetwork().sendString("PASSWORD ERROR");
-                    return null;
                 }
             } else{
                 connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
-                return null;
             }
         } else{
             connection.getSendViaNetwork().sendString("NO USER FOUND");
-            return null;
         }
 
     }
-
     private void doctorLoggedInMenu(Doctor doctor) {
         connection.getSendViaNetwork().sendLoggedDoctor(doctor);
-        int option = connection.getReceiveViaNetwork().receiveInt();
+        int option;
+        do{
+            switch(option = connection.getReceiveViaNetwork().receiveInt()){
+                case 0: exitMenu(); break; //Doctor wants to exit
+                case 1: doctorPatientMenu(); break; //Doctor wants to see patients
+            }
+        } while(option != 0);
     }
+    private void doctorPatientMenu() {
+        Integer patientId = connection.getReceiveViaNetwork().receiveInt();
+        List<Report> reports = manager.getReportJDBC().getReportsByPatientId(patientId);
+        connection.getSendViaNetwork().sendReports(reports);
+        int option;
+        do{
+            switch (option = connection.getReceiveViaNetwork().receiveInt()){
+                case 0: return; //Doctor wants to go back (select another patient)
+                case 1:  //Doctor wants to add observation of a patient
+                    Integer reportId = connection.getReceiveViaNetwork().receiveInt();
+                    String doctorObservation = connection.getReceiveViaNetwork().receiveString();
+                    manager.getReportJDBC().updateDoctorObservation(reportId, doctorObservation);
+                    connection.getSendViaNetwork().sendString("ADDED OBSERVATION: " + doctorObservation);
+                    break;
+            }
+        } while (option != 0);
+    }
+
     private void logInPatient(){
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
 

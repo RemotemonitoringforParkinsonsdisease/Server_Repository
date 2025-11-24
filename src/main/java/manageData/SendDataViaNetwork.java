@@ -94,17 +94,21 @@ public class SendDataViaNetwork {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending doctor", e);
         }
     }
-    public void sendReports(List<Report> reports) throws IOException{
-        sendInt(reports.size());
-        for (Report r : reports) {
-            dataOutputStream.writeInt(r.getReportId());
-            dataOutputStream.writeInt(r.getPatientId());
-            dataOutputStream.writeUTF(r.getReportDate().toString());
-            sendSymptoms(r.getSymptoms());
-            sendSignals(r.getSignals());
-            dataOutputStream.writeUTF(r.getPatientObservation());
-            dataOutputStream.writeUTF(r.getDoctorObservation());
-            dataOutputStream.flush();
+    public void sendReports(List<Report> reports){
+        try{
+            sendInt(reports.size());
+            for (Report r : reports) {
+                dataOutputStream.writeInt(r.getReportId());
+                dataOutputStream.writeInt(r.getPatientId());
+                dataOutputStream.writeUTF(r.getReportDate().toString());
+                sendSymptoms(r.getSymptoms());
+                sendSignals(r.getSignals());
+                dataOutputStream.writeUTF(r.getPatientObservation());
+                dataOutputStream.writeUTF(r.getDoctorObservation());
+                dataOutputStream.flush();
+            }
+        } catch (IOException e) {
+            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending reports", e);
         }
     }
     public void sendSymptoms(List<Symptoms> symptoms) throws IOException{
@@ -124,6 +128,7 @@ public class SendDataViaNetwork {
         for (Signal signal : signals) {
             dataOutputStream.writeInt(signal.getSignalId());
             dataOutputStream.writeUTF(signal.getSignalType().name());
+            dataOutputStream.writeInt(signal.getSamplingRate());
             sendListOfIntegerValues(signal.getValues());
         }
     }
