@@ -1,5 +1,6 @@
 package jdbcs;
 import POJOs.Doctor;
+import POJOs.SignalType;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,7 +26,9 @@ public class ManagerJDBC {
     private PatientJDBC patientJDBC;
     private DoctorJDBC doctorJDBC;
     private ReportJDBC reportJDBC;
-    private SymptomJDBC symptomJDBC;
+    private UserJDBC userJDBC;
+    private AdminJDBC adminJDBC;
+    private SignalJDBC signalJDBC;
 
     // CONSTRUCTOR
     public ManagerJDBC() {
@@ -40,13 +43,17 @@ public class ManagerJDBC {
             createDoctorsTable();
             createPatientsTable();
             createReportsTable();
-            createSymptomsTable();
+            createUsersTable();
+            createAdminsTable();
+            createSignalsTable();
 
             // Inicializar JDBCs
             patientJDBC = new PatientJDBC(this);
             doctorJDBC = new DoctorJDBC(this);
             reportJDBC = new ReportJDBC(this);
-            symptomJDBC = new SymptomJDBC(this);
+            userJDBC = new UserJDBC(this);
+            adminJDBC = new AdminJDBC(this);
+            signalJDBC = new SignalJDBC(this);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,16 +71,41 @@ public class ManagerJDBC {
             e.printStackTrace();
         }
     }
-
+    public void createUsersTable(){
+        String sql = "CREATE TABLE IF NOT EXISTS User ("
+                + "user_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "email TEXT UNIQUE NOT NULL"
+                + ");";
+        try (Statement stmt = c.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla User creada correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void createAdminsTable(){
+        String sql = "CREATE TABLE IF NOT EXISTS Admin ("
+                + "admin_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "user_id INTEGER,"
+                + "admin_password TEXT NOT NULL, "
+                + "FOREIGN KEY (user_id) REFERENCES User (user_id)"
+                + ");";
+        try (Statement stmt = c.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla User creada correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public void createDoctorsTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Doctor ("
-                + "doctor_id TEXT PRIMARY KEY, "
+                + "doctor_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "user_id INTEGER,"
                 + "full_name TEXT NOT NULL, "
-                + "dob TEXT NOT NULL, "
-                + "email TEXT UNIQUE NOT NULL, "
-                + "password TEXT NOT NULL"
+                + "doctor_password TEXT NOT NULL, "
+                + "dob TEXT NOT NULL,"
+                + "FOREIGN KEY (user_id) REFERENCES User (user_id)"
                 + ");";
-
         try (Statement stmt = c.createStatement()) {
             stmt.execute(sql);
             System.out.println("Tabla Doctor creada correctamente.");
@@ -81,16 +113,15 @@ public class ManagerJDBC {
             e.printStackTrace();
         }
     }
-
-
     public void createPatientsTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Patient ("
-                + "patient_id TEXT PRIMARY KEY, "
+                + "patient_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "user_id INTEGER, "
+                + "doctor_id INTEGER, "
                 + "full_name TEXT NOT NULL, "
-                + "dob TEXT NOT NULL, "
-                + "email TEXT UNIQUE NOT NULL, "
                 + "password TEXT NOT NULL, "
-                + "doctor_id TEXT, "
+                + "dob TEXT NOT NULL, "
+                + "FOREIGN KEY (user_id) REFERENCES User (user_id),"
                 + "FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)"
                 + ");";
 
@@ -101,24 +132,31 @@ public class ManagerJDBC {
             e.printStackTrace();
         }
     }
-
-
     public void createReportsTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Report ("
-                + "report_id TEXT PRIMARY KEY, "
+                + "report_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "patient_id INTEGER NOT NULL, "
                 + "report_date TEXT NOT NULL, "
-                + "signalEMG TEXT, "
-                + "signalEDA TEXT, "
-                + "signalECG TEXT, "
-                + "signalACC TEXT, "
-                + "patient_id TEXT NOT NULL, "
-                + "doctor_id TEXT NOT NULL, "
                 + "patient_observation TEXT, "
                 + "doctor_observation TEXT, "
-                + "FOREIGN KEY (patient_id) REFERENCES Patient(patient_id), "
-                + "FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)"
+                + "symptoms TEXT, "
+                + "FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON DELETE CASCADE"
                 + ");";
-
+        try (Statement stmt = c.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla Report creada correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void createSignalsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS Signal ("
+                + "signal_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "report_id INTEGER NOT NULL, "
+                + "signal_type TEXT NOT NULL, "
+                + "signal_values TEXT NOT NULL, "
+                + "FOREIGN KEY (report_id) REFERENCES Report(report_id) ON DELETE CASCADE"
+                + ");";
         try (Statement stmt = c.createStatement()) {
             stmt.execute(sql);
             System.out.println("Tabla Report creada correctamente.");
@@ -127,20 +165,6 @@ public class ManagerJDBC {
         }
     }
 
-
-    public void createSymptomsTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS Symptom ("
-                + "symptom_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "name TEXT NOT NULL UNIQUE"
-                + ");";
-
-        try (Statement stmt = c.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Tabla Symptom creada correctamente.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public Doctor assignRandomDoctor() {
         List<Doctor> doctors = doctorJDBC.readDoctors();
@@ -168,8 +192,12 @@ public class ManagerJDBC {
         return reportJDBC;
     }
 
-    public SymptomJDBC getSymptomJDBC() {
-        return symptomJDBC;
+    public UserJDBC getUserJDBC() {
+        return userJDBC;
     }
+    public AdminJDBC getAdminJDBC() {
+        return adminJDBC;
+    }
+
 }
 
