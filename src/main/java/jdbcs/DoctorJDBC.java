@@ -31,7 +31,7 @@ public class DoctorJDBC implements DoctorManager {
     public void addDoctor(Doctor doctor) {
         String sql = "INSERT INTO Doctor (doctor_id, full_name, dob, email, password) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, doctor.getId());  // tu id aleatorio con "d" al inicio
+            stmt.setInt(1, doctor.getDoctorId());  // tu id aleatorio con "d" al inicio
             stmt.setString(2, doctor.getFullName());
             stmt.setString(3, doctor.getDob().toString());
             stmt.setString(4, doctor.getEmail());
