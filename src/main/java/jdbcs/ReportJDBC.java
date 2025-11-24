@@ -24,10 +24,10 @@ public class ReportJDBC implements ReportManager {
             stmt.setString(2, report.getReportDate().toString());
 
             // Guardamos cada tipo de señal si existe
-            stmt.setString(3, report.getSignalByType(SignalType.EMG) != null ? report.getSignalByType(SignalType.EMG).valuesToString() : "");
-            stmt.setString(4, report.getSignalByType(SignalType.EDA) != null ? report.getSignalByType(SignalType.EDA).valuesToString() : "");
-            stmt.setString(5, report.getSignalByType(SignalType.ECG) != null ? report.getSignalByType(SignalType.ECG).valuesToString() : "");
-            stmt.setString(6, report.getSignalByType(SignalType.ACC) != null ? report.getSignalByType(SignalType.ACC).valuesToString() : "");
+            stmt.setString(3, report.getSignalByType(SignalType.EMG) != null ? report.getSignalByType(SignalType.EMG).intValuesToString() : "");
+            stmt.setString(4, report.getSignalByType(SignalType.EDA) != null ? report.getSignalByType(SignalType.EDA).intValuesToString() : "");
+            stmt.setString(5, report.getSignalByType(SignalType.ECG) != null ? report.getSignalByType(SignalType.ECG).intValuesToString() : "");
+            stmt.setString(6, report.getSignalByType(SignalType.ACC) != null ? report.getSignalByType(SignalType.ACC).intValuesToString() : "");
 
             // IDs como Strings
             stmt.setString(7, report.getPatient().getId());

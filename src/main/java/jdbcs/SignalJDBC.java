@@ -1,12 +1,9 @@
 package jdbcs;
 
 import POJOs.Signal;
-import POJOs.SignalType;
 import managers.SignalManager;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SignalJDBC implements SignalManager {
 
@@ -22,13 +19,14 @@ public class SignalJDBC implements SignalManager {
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setString(1, signal.getSignalId());
             stmt.setString(2, signal.getSignalType().name());
-            stmt.setString(3, signal.valuesToString());
+            stmt.setString(3, signal.intValuesToString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /*
     @Override
     public Signal getSignalById(String signalId) {
         String sql = "SELECT * FROM Signal WHERE signal_id = ?";
@@ -37,9 +35,9 @@ public class SignalJDBC implements SignalManager {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 SignalType type = SignalType.valueOf(rs.getString("type"));
-                String[] valuesArray = rs.getString("values").split(",");
-                List<Float> values = new ArrayList<>();
-                for (String s : valuesArray) values.add(Float.parseFloat(s));
+                Integer[] valuesArray = rs.getInt("values").split(",");
+                List<Integer> values = new ArrayList<>();
+                for (Integer s : valuesArray) values.add(s));
                 Signal s = new Signal(type, signalId);
                 s.setValues(values);
                 return s;
@@ -49,4 +47,6 @@ public class SignalJDBC implements SignalManager {
         }
         return null;
     }
+
+     */
 }

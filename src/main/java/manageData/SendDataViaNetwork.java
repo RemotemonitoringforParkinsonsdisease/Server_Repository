@@ -132,6 +132,13 @@ public class SendDataViaNetwork {
             sendListOfIntegerValues(signal.getValues());
         }
     }
+
+    public void sendListOfIntegerValues(List<Integer> values) throws IOException{
+        dataOutputStream.writeInt(values.size());
+        for (Integer value : values) {
+            dataOutputStream.writeInt(value);
+        }
+    }
     public void releaseResources() {
         try {
             dataOutputStream.close();
@@ -140,4 +147,12 @@ public class SendDataViaNetwork {
             }
     }
 
+    public void sendUser(User user) {
+        try {
+            dataOutputStream.writeInt(user.getId());
+            dataOutputStream.writeUTF(user.getEmail());
+        } catch (IOException e) {
+            System.err.println("Error al leer el flujo de entrada: " + e.getMessage());
+        }
+    }
 }

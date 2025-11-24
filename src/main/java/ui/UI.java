@@ -52,7 +52,7 @@ public class UI {
         //TODO DOOOOOOOOOO
     }
 
-    private void patientPreLoggedMenu() {
+    private void patientPreLoggedMenu() throws IOException {
        int option = connection.getReceiveViaNetwork().receiveInt();
        switch (option){
            case 1: registerPatient(); break;
@@ -70,7 +70,7 @@ public class UI {
     }
 
 /**/
-    public void registerPatient() {
+    public void registerPatient() throws IOException {
         String email = connection.getReceiveViaNetwork().receiveString(); // email
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
@@ -95,16 +95,19 @@ public class UI {
 
 
     }
-    public void patientLoggedInMenu(Patient patient) {
+    public void patientLoggedInMenu(Patient patient) throws IOException {
         connection.getSendViaNetwork().sendLoggedPatient(patient);
-        int option = connection.getReceiveViaNetwork().receiveInt();
-        switch (option){
-            case 1: seePatientInfo(patient); break;
-            case 2: createReport(patient); break;
-            case 3: exitMenu(); break;
-        }
+        int option;
+        do {
+            switch (option = connection.getReceiveViaNetwork().receiveInt()){
+                case 1: seePatientInfo(patient); break;
+                case 2: createReport(patient); break;
+                case 3: exitMenu(); break;
+            }
+        } while (option != 3);
     }
-    private void seePatientInfo(Patient patient) {
+
+    private void seePatientInfo(Patient patient) throws IOException {
         User user = manager.getUserJDBC().getUserById(patient.getUserId());
         connection.getSendViaNetwork().sendUser(user);
         if(patient.getDoctorId() != null){
@@ -115,7 +118,8 @@ public class UI {
         }
         patientLoggedInMenu(patient);
     }
-    private void createReport(Patient patient) {
+
+    private void createReport(Patient patient) throws IOException {
         Report report = connection.getReceiveViaNetwork().receiveReport();
         //TODO: Guardad en DB
         patient.addReport(report);
@@ -127,7 +131,6 @@ public class UI {
     }
 
 
-/**/
     private void registerDoctor() {
         String email = connection.getReceiveViaNetwork().receiveString(); // email
 
@@ -216,7 +219,7 @@ public class UI {
         } while (option != 0);
     }
 
-    private void logInPatient(){
+    private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
 
         if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
