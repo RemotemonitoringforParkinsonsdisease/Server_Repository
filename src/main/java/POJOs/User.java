@@ -8,14 +8,11 @@ public class User {
     private Integer id;   // protegido para que subclases puedan acceder
     private String email;
 
-    public User(String email, String fullName) {
-        this.email = email;
-
+    public User() {
     }
-    public User(Integer id, String email, String fullName) {
+    public User(Integer id, String email) {
         this.id = id;
         this.email = email;
-
     }
 
     // Getters
