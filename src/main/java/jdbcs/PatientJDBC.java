@@ -1,6 +1,8 @@
 package jdbcs;
 
 import POJOs.Patient;
+import POJOs.Report;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -119,4 +121,29 @@ public class PatientJDBC {
         }
         return patients;
     }
+    public Patient getPatientByUserId(Integer userId) {
+        String sql = "SELECT * FROM patient WHERE user_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, userId); // Establecer el user_id en la consulta SQL
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                // Obtener los datos del paciente
+                Integer patientId = rs.getInt("patient_id");
+                Integer doctorId = rs.getInt("doctor_id");
+                String fullName = rs.getString("full_name");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
+                String patientPassword = rs.getString("patient_password");
+
+                // Obtener los reportes del paciente
+                List<Report> reports = manager.getReportJDBC().getReportsByPatient(patientId);  // Llamamos al ReportJDBC para obtener los reportes
+
+                // Crear el objeto Patient con los datos obtenidos de la base de datos
+                return new Patient(fullName, userId, patientId, doctorId, patientPassword, dob, reports);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Si no se encuentra el paciente, se devuelve null
+    }
+
 }

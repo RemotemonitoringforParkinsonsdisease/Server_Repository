@@ -15,20 +15,21 @@ public class DoctorJDBC {
         this.manager = manager;
     }
 
-    // Método para agregar un doctor
+    // Método para agregar un doctor (mejorado para manejar auto incremento de doctor_id)
     public void addDoctor(Doctor doctor) {
-        String sql = "INSERT INTO doctor (user_id, doctor_id, doctor_password, dob, full_name) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO doctor (user_id, doctor_password, dob, full_name) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, doctor.getUserId());
-            stmt.setInt(2, doctor.getDoctorId());
-            stmt.setString(3, doctor.getDoctorPassword());
-            stmt.setString(4, doctor.getDob().toString());
-            stmt.setString(5, doctor.getFullName());
+            stmt.setString(2, doctor.getDoctorPassword());
+            stmt.setString(3, doctor.getDob().toString());
+            stmt.setString(4, doctor.getFullName());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
 
     // Método para obtener un doctor por su ID
     public Doctor getDoctorById(Integer id) {

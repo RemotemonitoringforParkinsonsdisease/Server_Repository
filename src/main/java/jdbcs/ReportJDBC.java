@@ -18,19 +18,19 @@ public class ReportJDBC {
 
     // Método para agregar un reporte
     public void addReport(Report report) {
-        String sql = "INSERT INTO report (report_id, report_date, patient_id, doctor_id, patient_observation, doctor_observation) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO report (report_id, report_date, patient_id, patient_observation, doctor_observation) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, report.getReportId());
             stmt.setString(2, report.getReportDate().toString());
             stmt.setInt(3, report.getPatientId());
-            stmt.setInt(4, report.getPatientId()); // assuming doctor_id is the same as patient_id for this example (update as needed)
-            stmt.setString(5, report.getPatientObservation());
-            stmt.setString(6, report.getDoctorObservation());
+            stmt.setString(4, report.getPatientObservation());
+            stmt.setString(5, report.getDoctorObservation());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     // Método para obtener un reporte por su ID
     public Report getReportById(Integer reportId) {

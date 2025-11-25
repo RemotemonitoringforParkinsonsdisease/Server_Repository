@@ -19,7 +19,7 @@ public class SignalJDBC {
     public void addSignal(Signal signal) {
         String sql = "INSERT INTO signal (signal_id, report_id, signal_type, values, sampling_rate) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, signal.getSignalId());  // Aquí insertamos el signalId como Integer
+            stmt.setInt(1, signal.getSignalId());
             stmt.setInt(2, signal.getReportId());
             stmt.setString(3, signal.getSignalType().name());  // Guardamos el tipo de señal como String
             stmt.setString(4, signal.intValuesToString());  // Guardamos los valores como String
@@ -29,6 +29,7 @@ public class SignalJDBC {
             e.printStackTrace();
         }
     }
+
 
     // Método para obtener una señal por su ID
     public Signal getSignalById(Integer signalId) {

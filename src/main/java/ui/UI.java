@@ -75,7 +75,7 @@ public class UI {
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
             System.out.println("User already exists");
-            //TODO userId = cogerElIDDeUsuario existente
+            int userID = manager.getUserJDBC().getUserIdByEmail(email);
 
             if(manager.getPatientJDBC().getPatientByUserId(userID) != null){
                 System.out.println("Patient already exists");

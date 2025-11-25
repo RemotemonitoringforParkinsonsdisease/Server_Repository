@@ -9,7 +9,9 @@ public class UserJDBC {
     private ManagerJDBC manager;
     public UserJDBC(ManagerJDBC manager) {
         this.manager = manager;
+        this.c = manager.getConnection();  // Se obtiene la conexión desde ManagerJDBC
     }
+
     public User addUser(String email) {
         String sql = "INSERT INTO user (email) VALUES (?)";
 
@@ -63,6 +65,30 @@ public class UserJDBC {
 
             if (rs.next()) {
                 return rs.getInt("user_id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null; // user not found
+    }
+
+    public User getUserById(int id) {
+
+        String sql = "SELECT user_id, email FROM user WHERE user_id = ?";
+
+        try (Connection conn = manager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setEmail(rs.getString("email"));
+                return user;
             }
 
         } catch (SQLException e) {
