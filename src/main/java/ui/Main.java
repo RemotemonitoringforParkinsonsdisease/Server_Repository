@@ -7,6 +7,7 @@ import POJOs.Doctor;
 import manageData.ReceiveDataViaNetwork;
 import manageData.SendDataViaNetwork;
 import ui.UI;
+import utilities.Utilities;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,24 +17,40 @@ import java.net.Socket;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
 
     private static final int PORT = 9000;
     private static boolean running = true;
+    private static ServerSocket serverSocket;
+    private static Thread serverThread;
 
     public static void main(String[] args) {
         ManagerJDBC jdbcManager = new ManagerJDBC();
-        try{
-            ServerSocket serverSocket = new ServerSocket(PORT);
-            Thread thread = logIn(jdbcManager, serverSocket);
-        } catch (IOException e) {
-            System.out.println(e); //TODO:Excepcion
+        adminLoginMenu();
+            do{
+                System.out.println("SERVER MENU (PORT: " + PORT + "):");
+                System.out.println("1) Start Server");
+                System.out.println("2) Stop Server");
+                System.out.println("3) Exit");
+                int option = Utilities.readInteger("Select an option: ");
+                switch (option){
+                    case 1: startServer(jdbcManager); break;
+                    case 2: stopServer(); break;
+                    case 3: exitServer(); break;
+                    default: System.out.println("Please introduce a valid option.");
+                        continue;
 
-        }
-
+                }
+            } while(true);
     }
-    private void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
+    private static void adminLoginMenu() {
+        //TODO: Implement admin login menu
+    }
+    private static void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
         try{
             UI ui = new UI(socket, jdbcManager);
             ui.run();
@@ -47,71 +64,54 @@ public class Main {
             }
         }
     }
+    private static void startServer(ManagerJDBC jdbcManager) {
+        if(running){
+            System.out.println("Server is already running.");
+            return;
+        }
+        running = true;
+        System.out.println("Server started");
+        Thread serverThread = new Thread(() -> {
+            try {
+                serverSocket = new ServerSocket(PORT);
+                System.out.println("Server started on port " + PORT);
 
-    private static void logIn(ManagerJDBC manager, ServerSocket serverSocket) {
-        //JDBCRole roleManager = new JDBCRole(manager);
-        //JDBCUser userManager = new JDBCUser(manager, roleManager);
-        //Role role = new Role("administrator");
-        try {
-            while (running) {
-                System.out.println("\n\n      LOG IN\n");
-                String email;
-                do {
-                    email = utilities.Utilities.readString("Email: ");
-                } while (!utilities.Utilities.checkEmail(email));
+                while (running) {
+                    try {
+                        Socket socket = serverSocket.accept();
+                        System.out.println("Client connected.");
 
-                String psw = utilities.Utilities.readString("Enter your password: ");
-                byte[] password = EncryptPassword.encryptPassword(psw);
+                        new Thread(() -> {
+                            clientHandler(socket, jdbcManager);
+                        }).start();
 
-                if (password != null) {
-                    User u = userManager.checkPassword(email, new String(password));
-                    if (u != null && u.getRole().getName().equals(role.getName())) {
-                        menuAdmin(serverSocket);
+                    } catch (IOException e) {
+                        if (running) {
+                            System.out.println("Error accepting client: " + e.getMessage());
+                        }
                     }
                 }
+            } catch (IOException e) {
+                System.out.println("Unable to start server: " + e.getMessage());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        });
+        serverThread.start();
+    }
+    private static void stopServer() {
+        if(!running){
+            System.out.println("Server is already stopped.");
+            return;
+        }
+        try{
+            running = false;
+            serverSocket.close();
+            System.out.println("Server stopped");
+        } catch (IOException e) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
         }
     }
-    /**
-     * Displays the server's admin menu, where the admin can shut down the server
-     * or see the number of active clients connected.
-     */
-    private static void menuAdmin(ServerSocket serverSocket) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            while (running) {
-                System.out.println("=== ADMINISTRATOR MENU ===");
-                System.out.println("1. Turn off the server");
-                System.out.println("2. View connected clients");
-                System.out.print("Select and option: \n");
-
-                String input = reader.readLine();
-                int opcion;
-                try {
-                    opcion = Integer.parseInt(input);
-                } catch (NumberFormatException e) {
-                    System.out.println("Please, enter a valid number.");
-                    continue;
-                }
-
-                if (opcion == 1) {
-                    System.out.println("Closing server...");
-                    while (activeClients > 0) {
-                        System.out.println("Waiting for active clients desconnection: " + activeClients);
-                        Thread.sleep(2000);
-                    }
-                    running = false;
-                    releaseResources(serverSocket);
-                } else if (opcion == 2) {
-                    System.out.println("Active clients now: " + activeClients);
-                } else {
-                    System.out.println("Not valid option. Try again.");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private static void exitServer() {
+        //TODO: Implement exit server
     }
 }
 
