@@ -18,14 +18,16 @@ public class PatientJDBC implements PatientManager {
 
     @Override
     public void addPatient(Patient patient) {
-        String sql = "INSERT INTO Patient (patient_id, full_name, dob, email, password, doctor_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Patient (patient_id, user_id, doctor_id, full_name, dob, password, reports) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, patient.getId());
+            //Mirar los .toString(), creo q son fumada
+            stmt.setString(1, patient.getPatientId().toString());
+            stmt.setString(4, patient.getUserId().toString());
+            stmt.setString(4, patient.getDoctorId().toString());
             stmt.setString(2, patient.getFullName());
             stmt.setString(3, patient.getDob().toString());
-            stmt.setString(4, patient.getEmail());
-            stmt.setString(5, patient.getPassword());
-            stmt.setString(6, patient.getDoctorId());
+            stmt.setString(5, patient.getPatientPassword());
+            stmt.setString(6, patient.getReports().toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +47,7 @@ public class PatientJDBC implements PatientManager {
                 String password = rs.getString("password");
                 String doctorId = rs.getString("doctor_id");
 
-                Patient p = new Patient(id, fullName, dob, email, password);
+                Patient p = new Patient(fullName, userId, id, dob, email, password);
                 p.setDoctorId(doctorId);
                 return p;
             }
