@@ -2,11 +2,13 @@ package jdbcs;
 
 import POJOs.Signal;
 import POJOs.SignalType;
+import managers.SignalManager;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SignalJDBC {
+public class SignalJDBC implements SignalManager {
 
     private ManagerJDBC manager;
 
@@ -30,7 +32,7 @@ public class SignalJDBC {
         }
     }
 
-    /*
+
     // Método para obtener una señal por su ID
     public Signal getSignalById(Integer signalId) {
         String sql = "SELECT * FROM signal WHERE signal_id=?";
@@ -115,5 +117,5 @@ public class SignalJDBC {
         return signals;
     }
 
-     */
+
 }

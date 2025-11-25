@@ -2,12 +2,14 @@ package jdbcs;
 
 import POJOs.Report;
 import POJOs.SignalType;
+import managers.ReportManager;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReportJDBC {
+public class ReportJDBC implements ReportManager {
 
     private ManagerJDBC manager;
 

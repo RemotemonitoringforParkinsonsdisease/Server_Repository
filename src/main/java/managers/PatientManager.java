@@ -4,9 +4,13 @@ import POJOs.Patient;
 import java.util.List;
 
 public interface PatientManager {
-    Patient getPatientByEmail(String email);
-    Patient getPatientById(String id);
-    List<Patient> readPatients();
     void addPatient(Patient patient);
-    List<Patient> getPatientsByDoctor(String doctorId);
+    Patient getPatientByPatientId(Integer patientId);
+    List<Patient> readPatients();
+    String getPasswordByPatientId(Integer patientId);
+    Integer getPatientIdByUserId(Integer userId);
+    Patient getPatientByEmail(String email);
+    List<Patient> getPatientsByDoctor(Integer doctorId);
+    Patient getPatientByUserId(Integer userId);
 }
+

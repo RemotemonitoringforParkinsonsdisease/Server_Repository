@@ -2,13 +2,14 @@ package jdbcs;
 
 import POJOs.Patient;
 import POJOs.Report;
+import managers.PatientManager;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientJDBC {
+public class PatientJDBC implements PatientManager {
 
     private ManagerJDBC manager;
 

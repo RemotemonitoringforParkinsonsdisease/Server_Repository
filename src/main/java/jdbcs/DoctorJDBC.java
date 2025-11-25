@@ -1,13 +1,15 @@
 package jdbcs;
 
 import POJOs.Doctor;
+import managers.DoctorManager;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class DoctorJDBC {
+public class DoctorJDBC implements DoctorManager {
 
     private ManagerJDBC manager;
 
