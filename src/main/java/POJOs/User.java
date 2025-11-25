@@ -10,12 +10,12 @@ public class User {
 
     public User(String email, String fullName) {
         this.email = email;
-        this.fullName = fullName;
+
     }
     public User(Integer id, String email, String fullName) {
         this.id = id;
         this.email = email;
-        this.fullName = fullName;
+
     }
 
     // Getters
@@ -26,9 +26,7 @@ public class User {
     public String getEmail() {
         return email;
     }
-    public String getFullName() {
-        return fullName;
-    }
+
 
     // Setters
     public void setId(Integer id) {
@@ -39,9 +37,7 @@ public class User {
         this.email = email;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+
 
 
 

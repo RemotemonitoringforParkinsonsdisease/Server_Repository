@@ -1,5 +1,6 @@
 package ui;
 
+import POJOs.User;
 import jdbcs.ManagerJDBC;
 import POJOs.Patient;
 import POJOs.Doctor;

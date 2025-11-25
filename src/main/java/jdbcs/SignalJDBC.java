@@ -1,9 +1,12 @@
 package jdbcs;
 
 import POJOs.Signal;
+import POJOs.SignalType;
 import managers.SignalManager;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SignalJDBC implements SignalManager {
 
