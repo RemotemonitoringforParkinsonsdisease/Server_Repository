@@ -2,54 +2,115 @@ package jdbcs;
 
 import POJOs.Signal;
 import POJOs.SignalType;
-import managers.SignalManager;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SignalJDBC implements SignalManager {
+public class SignalJDBC {
 
     private ManagerJDBC manager;
 
+    // Constructor
     public SignalJDBC(ManagerJDBC manager) {
         this.manager = manager;
     }
 
-    @Override
+    // Método para agregar una señal
     public void addSignal(Signal signal) {
-        String sql = "INSERT INTO Signal (signal_id, type, values) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO signal (signal_id, report_id, signal_type, values, sampling_rate) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, signal.getSignalId());
-            stmt.setString(2, signal.getSignalType().name());
-            stmt.setString(3, signal.intValuesToString());
+            stmt.setInt(1, signal.getSignalId());  // Aquí insertamos el signalId como Integer
+            stmt.setInt(2, signal.getReportId());
+            stmt.setString(3, signal.getSignalType().name());  // Guardamos el tipo de señal como String
+            stmt.setString(4, signal.intValuesToString());  // Guardamos los valores como String
+            stmt.setInt(5, signal.getSamplingRate());  // Guardamos la tasa de muestreo
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    @Override
-    public Signal getSignalById(String signalId) {
-        String sql = "SELECT * FROM Signal WHERE signal_id = ?";
+    // Método para obtener una señal por su ID
+    public Signal getSignalById(Integer signalId) {
+        String sql = "SELECT * FROM signal WHERE signal_id=?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, signalId);
+            stmt.setInt(1, signalId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                SignalType type = SignalType.valueOf(rs.getString("type"));
-                Integer[] valuesArray = rs.getInt("values").split(",");
+                SignalType signalType = SignalType.valueOf(rs.getString("signal_type"));
+                String valuesString = rs.getString("values");
                 List<Integer> values = new ArrayList<>();
-                for (Integer s : valuesArray) values.add(s));
-                Signal s = new Signal(type, signalId);
-                s.setValues(values);
-                return s;
+                if (valuesString != null && !valuesString.isEmpty()) {
+                    values = signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                }
+                Integer samplingRate = rs.getInt("sampling_rate");
+
+                Signal signal = new Signal(signalId, signalType);
+                signal.setValues(values);
+                signal.setSamplingRate(samplingRate);
+
+                return signal;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    // Método para obtener todas las señales
+    public List<Signal> readSignals() {
+        List<Signal> signals = new ArrayList<>();
+        String sql = "SELECT * FROM signal";
+        try (Statement stmt = manager.getConnection().createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                Integer signalId = rs.getInt("signal_id");
+                SignalType signalType = SignalType.valueOf(rs.getString("signal_type"));
+                String valuesString = rs.getString("values");
+                List<Integer> values = new ArrayList<>();
+                if (valuesString != null && !valuesString.isEmpty()) {
+                    values = signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                }
+                Integer samplingRate = rs.getInt("sampling_rate");
+
+                Signal signal = new Signal(signalId, signalType);
+                signal.setValues(values);
+                signal.setSamplingRate(samplingRate);
+
+                signals.add(signal);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return signals;
+    }
+
+    // Método para obtener señales asociadas a un reporte específico
+    public List<Signal> getSignalsByReport(Integer reportId) {
+        List<Signal> signals = new ArrayList<>();
+        String sql = "SELECT * FROM signal WHERE report_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, reportId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Integer signalId = rs.getInt("signal_id");
+                SignalType signalType = SignalType.valueOf(rs.getString("signal_type"));
+                String valuesString = rs.getString("values");
+                List<Integer> values = new ArrayList<>();
+                if (valuesString != null && !valuesString.isEmpty()) {
+                    values = signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                }
+                Integer samplingRate = rs.getInt("sampling_rate");
+
+                Signal signal = new Signal(signalId, signalType);
+                signal.setValues(values);
+                signal.setSamplingRate(samplingRate);
+
+                signals.add(signal);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return signals;
+    }
 }
-
-
