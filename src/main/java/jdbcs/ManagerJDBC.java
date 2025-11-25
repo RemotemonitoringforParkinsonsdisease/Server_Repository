@@ -245,7 +245,7 @@ public class ManagerJDBC {
 
     public Connection getConnection(){
         try{
-            return DriverManager.getConnection("jdbc:sqlite:./database/lunglink.db");
+            return DriverManager.getConnection("jdbc:sqlite:./database/Parkinson.db");
         }catch(SQLException e){
             throw new RuntimeException("Can't get connection", e);
         }
@@ -259,9 +259,8 @@ public class ManagerJDBC {
             // Crear tabla de usuario
             stmt.executeUpdate("""
             CREATE TABLE IF NOT EXISTS user (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                email TEXT UNIQUE NOT NULL,
-                full_name TEXT NOT NULL
+                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL
             );
         """);
 
@@ -269,10 +268,10 @@ public class ManagerJDBC {
             stmt.executeUpdate("""
             CREATE TABLE IF NOT EXISTS doctor (
                 doctor_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
                 full_name TEXT NOT NULL,
                 doctor_password TEXT NOT NULL,
                 dob DATE,
-                user_id INTEGER NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES user(id)
             );
         """);
@@ -281,17 +280,17 @@ public class ManagerJDBC {
             stmt.executeUpdate("""
             CREATE TABLE IF NOT EXISTS patient (
                 patient_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                doctor_id INTEGER,
                 full_name TEXT NOT NULL,
                 patient_password TEXT NOT NULL,
                 dob DATE,
-                doctor_id INTEGER,
-                user_id INTEGER NOT NULL,
                 FOREIGN KEY (doctor_id) REFERENCES doctor(doctor_id),
                 FOREIGN KEY (user_id) REFERENCES user(id)
             );
         """);
 
-            // Crear tabla de reportes
+            // Crear tabla de reports
             stmt.executeUpdate("""
             CREATE TABLE IF NOT EXISTS report (
                 report_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -299,11 +298,12 @@ public class ManagerJDBC {
                 report_date DATE NOT NULL,
                 patient_observation TEXT,
                 doctor_observation TEXT,
+                symptoms_list TEXT,
                 FOREIGN KEY (patient_id) REFERENCES patient(patient_id)
             );
         """);
 
-            // Crear tabla de señales
+            // Crear tabla de signal
             stmt.executeUpdate("""
             CREATE TABLE IF NOT EXISTS signal (
                 signal_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -311,16 +311,6 @@ public class ManagerJDBC {
                 signal_type TEXT NOT NULL,
                 values TEXT,  -- Se guardan los valores de la señal como texto
                 sampling_rate INTEGER,
-                FOREIGN KEY (report_id) REFERENCES report(report_id)
-            );
-        """);
-
-            // Crear tabla de síntomas
-            stmt.executeUpdate("""
-            CREATE TABLE IF NOT EXISTS symptoms (
-                symptom_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                report_id INTEGER NOT NULL,
-                symptom_name TEXT NOT NULL,
                 FOREIGN KEY (report_id) REFERENCES report(report_id)
             );
         """);
