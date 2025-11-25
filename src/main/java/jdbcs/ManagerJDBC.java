@@ -272,7 +272,7 @@ public class ManagerJDBC {
                 full_name TEXT NOT NULL,
                 doctor_password TEXT NOT NULL,
                 dob DATE,
-                FOREIGN KEY (user_id) REFERENCES user(id)
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
             );
         """);
 
@@ -286,7 +286,7 @@ public class ManagerJDBC {
                 patient_password TEXT NOT NULL,
                 dob DATE,
                 FOREIGN KEY (doctor_id) REFERENCES doctor(doctor_id),
-                FOREIGN KEY (user_id) REFERENCES user(id)
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
             );
         """);
 
