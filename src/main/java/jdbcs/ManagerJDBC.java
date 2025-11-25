@@ -212,6 +212,12 @@ import java.sql.*;
 public class ManagerJDBC {
 
     private static ManagerJDBC instance;
+    private PatientJDBC patientJDBC;
+    private DoctorJDBC doctorJDBC;
+    private ReportJDBC reportJDBC;
+    private UserJDBC userJDBC;
+    private AdminJDBC adminJDBC;
+    private SignalJDBC signalJDBC;
 
     public ManagerJDBC() {
         try {
@@ -234,6 +240,12 @@ public class ManagerJDBC {
         } catch (Exception e) {
             throw new RuntimeException("Error initializing DB", e);
         }
+        userJDBC = new UserJDBC(this);
+        doctorJDBC = new DoctorJDBC(this);
+        patientJDBC = new PatientJDBC(this);
+        reportJDBC = new ReportJDBC(this);
+        adminJDBC = new AdminJDBC(this);
+        signalJDBC = new SignalJDBC(this);
     }
 
     public static synchronized ManagerJDBC getInstance() {
@@ -245,7 +257,7 @@ public class ManagerJDBC {
 
     public Connection getConnection(){
         try{
-            return DriverManager.getConnection("jdbc:sqlite:./database/Parkinson.db");
+            return DriverManager.getConnection("jdbc:sqlite:./database/parkinson.db");
         }catch(SQLException e){
             throw new RuntimeException("Can't get connection", e);
         }
@@ -271,8 +283,8 @@ public class ManagerJDBC {
                 user_id INTEGER NOT NULL,
                 full_name TEXT NOT NULL,
                 doctor_password TEXT NOT NULL,
-                dob DATE,
-                FOREIGN KEY (user_id) REFERENCES user(id)
+                dob TEXT,
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
             );
         """);
 
@@ -284,9 +296,9 @@ public class ManagerJDBC {
                 doctor_id INTEGER,
                 full_name TEXT NOT NULL,
                 patient_password TEXT NOT NULL,
-                dob DATE,
+                dob TEXT,
                 FOREIGN KEY (doctor_id) REFERENCES doctor(doctor_id),
-                FOREIGN KEY (user_id) REFERENCES user(id)
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
             );
         """);
 
@@ -295,7 +307,7 @@ public class ManagerJDBC {
             CREATE TABLE IF NOT EXISTS report (
                 report_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 patient_id INTEGER NOT NULL,
-                report_date DATE NOT NULL,
+                report_date TEXT NOT NULL,
                 patient_observation TEXT,
                 doctor_observation TEXT,
                 symptoms_list TEXT,
@@ -320,5 +332,23 @@ public class ManagerJDBC {
         } catch (SQLException e) {
 
         }
+    }
+    public PatientJDBC getPatientJDBC() {
+        return patientJDBC;
+    }
+
+    public DoctorJDBC getDoctorJDBC() {
+        return doctorJDBC;
+    }
+
+    public ReportJDBC getReportJDBC() {
+        return reportJDBC;
+    }
+
+    public UserJDBC getUserJDBC() {
+        return userJDBC;
+    }
+    public AdminJDBC getAdminJDBC() {
+        return adminJDBC;
     }
 }

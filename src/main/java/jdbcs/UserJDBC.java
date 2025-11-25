@@ -52,4 +52,24 @@ public class UserJDBC {
 
         return null; // no user found
     }
+    public Integer getUserIdByEmail(String email) {
+        String sql = "SELECT user_id FROM user WHERE email = ?";
+
+        try (Connection conn = manager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("user_id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null; // user not found
+    }
+
 }
