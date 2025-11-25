@@ -10,23 +10,8 @@ public class UserJDBC {
     public UserJDBC(ManagerJDBC manager) {
         this.manager = manager;
     }
-
-    public User getUserByEmail(String email){
-        String query = "SELECT * FROM user WHERE email = ?";
-        try (PreparedStatement stmt = manager.getConnection().prepareStatement(query)) {
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new User(rs.getInt("id"), rs.getString("email"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-
-    }
     public User addUser(String email) {
-        String sql = "INSERT INTO User (email) VALUES (?)";
+        String sql = "INSERT INTO user (email) VALUES (?)";
 
         try (PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, email);
@@ -48,7 +33,7 @@ public class UserJDBC {
     }
     public User getUserByEmail(String email) {
 
-        String sql = "SELECT user_id, email FROM User WHERE email = ?";
+        String sql = "SELECT user_id, email FROM user WHERE email = ?";
 
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, email);

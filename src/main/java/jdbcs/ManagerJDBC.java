@@ -25,13 +25,6 @@ import java.util.Random;
 
 public class ManagerJDBC {
 
-    private Connection c = null;
-    private PatientJDBC patientJDBC;
-    private DoctorJDBC doctorJDBC;
-    private ReportJDBC reportJDBC;
-    private UserJDBC userJDBC;
-    private AdminJDBC adminJDBC;
-    private SignalJDBC signalJDBC;
 
     // CONSTRUCTOR
     public ManagerJDBC() {
@@ -211,6 +204,13 @@ import java.sql.*;
 
 public class ManagerJDBC {
 
+    private Connection c = null;
+    private PatientJDBC patientJDBC;
+    private DoctorJDBC doctorJDBC;
+    private ReportJDBC reportJDBC;
+    private UserJDBC userJDBC;
+    private AdminJDBC adminJDBC;
+    private SignalJDBC signalJDBC;
     private static ManagerJDBC instance;
 
     public ManagerJDBC() {
@@ -320,5 +320,25 @@ public class ManagerJDBC {
         } catch (SQLException e) {
 
         }
+
     }
+    public PatientJDBC getPatientJDBC() {
+        return patientJDBC;
+    }
+
+    public DoctorJDBC getDoctorJDBC() {
+        return doctorJDBC;
+    }
+
+    public ReportJDBC getReportJDBC() {
+        return reportJDBC;
+    }
+
+    public UserJDBC getUserJDBC() {
+        return userJDBC;
+    }
+    public AdminJDBC getAdminJDBC() {
+        return adminJDBC;
+    }
+
 }
