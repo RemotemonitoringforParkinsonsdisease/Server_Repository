@@ -92,10 +92,15 @@ public class UI {
         Patient patient = connection.getReceiveViaNetwork().receiveRegisteredPatient();
         patient.setUserId(userId);
         patient.setDoctorId(doctorId);
+        System.out.println(patient);
         manager.getPatientJDBC().addPatient(patient);
+        Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
+        patient.setPatientId(patientId);
         patientLoggedInMenu(patient);
     }
     public void patientLoggedInMenu(Patient patient) throws IOException {
+        System.out.println("estamos en patientLoggedInMenu");
+        System.out.println(patient.getPatientId());
         connection.getSendViaNetwork().sendLoggedPatient(patient);
         int option;
         do {
