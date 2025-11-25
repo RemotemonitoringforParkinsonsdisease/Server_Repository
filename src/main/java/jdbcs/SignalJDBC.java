@@ -19,7 +19,7 @@ public class SignalJDBC implements SignalManager {
 
     // Método para agregar una señal
     public void addSignal(Signal signal) {
-        String sql = "INSERT INTO signal (report_id, signal_type, values, sampling_rate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO signal (report_id, signal_type, signal_values, sampling_rate) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, signal.getReportId());
             stmt.setString(2, signal.getSignalType().name());  // Guardamos el tipo de señal como String
@@ -40,15 +40,15 @@ public class SignalJDBC implements SignalManager {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 SignalType signalType = SignalType.valueOf(rs.getString("signal_type"));
-                String valuesString = rs.getString("values");
-                List<Integer> values = new ArrayList<>();
+                String valuesString = rs.getString("signal_values");
+                List<Integer> signal_values = new ArrayList<>();
                 if (valuesString != null && !valuesString.isEmpty()) {
-                    values = null;//signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                    signal_values = null;//signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
                 }
                 Integer samplingRate = rs.getInt("sampling_rate");
 
                 Signal signal = new Signal(signalId, signalType);
-                signal.setValues(values);
+                signal.setValues(signal_values);
                 signal.setSamplingRate(samplingRate);
 
                 return signal;
@@ -68,15 +68,15 @@ public class SignalJDBC implements SignalManager {
             while (rs.next()) {
                 Integer signalId = rs.getInt("signal_id");
                 SignalType signalType = SignalType.valueOf(rs.getString("signal_type"));
-                String valuesString = rs.getString("values");
-                List<Integer> values = new ArrayList<>();
+                String valuesString = rs.getString("signal_values");
+                List<Integer> signal_values = new ArrayList<>();
                 if (valuesString != null && !valuesString.isEmpty()) {
-                    values =  null; //signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                    signal_values =  null; //signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
                 }
                 Integer samplingRate = rs.getInt("sampling_rate");
 
                 Signal signal = new Signal(signalId, signalType);
-                signal.setValues(values);
+                signal.setValues(signal_values);
                 signal.setSamplingRate(samplingRate);
 
                 signals.add(signal);
@@ -97,15 +97,15 @@ public class SignalJDBC implements SignalManager {
             while (rs.next()) {
                 Integer signalId = rs.getInt("signal_id");
                 SignalType signalType = SignalType.valueOf(rs.getString("signal_type"));
-                String valuesString = rs.getString("values");
-                List<Integer> values = new ArrayList<>();
+                String valuesString = rs.getString("signal_values");
+                List<Integer> signal_values = new ArrayList<>();
                 if (valuesString != null && !valuesString.isEmpty()) {
-                    values = null;//signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                    signal_values = null;//signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
                 }
                 Integer samplingRate = rs.getInt("sampling_rate");
 
                 Signal signal = new Signal(signalId, signalType);
-                signal.setValues(values);
+                signal.setValues(signal_values);
                 signal.setSamplingRate(samplingRate);
 
                 signals.add(signal);

@@ -321,7 +321,7 @@ public class ManagerJDBC {
                 signal_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 report_id INTEGER NOT NULL,
                 signal_type TEXT NOT NULL,
-                values TEXT,  -- Se guardan los valores de la señal como texto
+                signal_values TEXT,  -- Se guardan los valores de la señal como texto
                 sampling_rate INTEGER,
                 FOREIGN KEY (report_id) REFERENCES report(report_id)
             );

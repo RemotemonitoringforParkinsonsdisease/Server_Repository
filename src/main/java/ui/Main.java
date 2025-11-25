@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 public class Main {
 
     private static final int PORT = 9000;
-    private static boolean running = true;
+    private static boolean running = false;
     private static ServerSocket serverSocket;
     private static Thread serverThread;
 
