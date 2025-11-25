@@ -19,13 +19,12 @@ public class SignalJDBC implements SignalManager {
 
     // Método para agregar una señal
     public void addSignal(Signal signal) {
-        String sql = "INSERT INTO signal (signal_id, report_id, signal_type, values, sampling_rate) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO signal (report_id, signal_type, values, sampling_rate) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, signal.getSignalId());
-            stmt.setInt(2, signal.getReportId());
-            stmt.setString(3, signal.getSignalType().name());  // Guardamos el tipo de señal como String
-            stmt.setString(4, signal.intValuesToString());  // Guardamos los valores como String
-            stmt.setInt(5, signal.getSamplingRate());  // Guardamos la tasa de muestreo
+            stmt.setInt(1, signal.getReportId());
+            stmt.setString(2, signal.getSignalType().name());  // Guardamos el tipo de señal como String
+            stmt.setString(3, signal.intValuesToString());  // Guardamos los valores como String
+            stmt.setInt(4, signal.getSamplingRate());  // Guardamos la tasa de muestreo
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
