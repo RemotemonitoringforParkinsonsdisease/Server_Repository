@@ -1,62 +1,49 @@
 package jdbcs;
 
 import POJOs.Doctor;
-import managers.DoctorManager;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DoctorJDBC implements DoctorManager {
+public class DoctorJDBC {
 
     private ManagerJDBC manager;
 
+    // Constructor
     public DoctorJDBC(ManagerJDBC manager) {
         this.manager = manager;
     }
 
-    @Override
-    public void addDoctor(String fullName, String email, String doctorId) { // antes era int
-        String sql = "INSERT INTO Doctor (full_name, email, doctor_id) VALUES (?,?,?)";
-        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, fullName);
-            stmt.setString(2, email);
-            stmt.setString(3, doctorId); // ahora es String
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+    // Método para agregar un doctor
     public void addDoctor(Doctor doctor) {
-        String sql = "INSERT INTO Doctor (doctor_id,user_id, full_name, dob) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO doctor (user_id, doctor_id, doctor_password, dob, full_name) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, doctor.getDoctorId());  // tu id aleatorio con "d" al inicio
-            stmt.setString(2, doctor.getUserId());
-            stmt.setString(3, doctor.getFullName());
+            stmt.setInt(1, doctor.getUserId());
+            stmt.setInt(2, doctor.getDoctorId());
+            stmt.setString(3, doctor.getDoctorPassword());
             stmt.setString(4, doctor.getDob().toString());
+            stmt.setString(5, doctor.getFullName());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    @Override
-    public Doctor getDoctorById(String id) { // antes era int
-        String sql = "SELECT * FROM Doctor WHERE doctor_id=?";
+    // Método para obtener un doctor por su ID
+    public Doctor getDoctorById(Integer id) {
+        String sql = "SELECT * FROM doctor WHERE doctor_id=?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, id); // usar String en vez de int
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                Integer userId = rs.getInt("user_id");
+                Integer doctorId = rs.getInt("doctor_id");
+                String doctorPassword = rs.getString("doctor_password");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String fullName = rs.getString("full_name");
-                String email = rs.getString("email");
-                String dobStr = rs.getString("dob");
-                String password = rs.getString("password");
 
-                LocalDate dob = dobStr != null ? LocalDate.parse(dobStr) : null;
-
-                return new Doctor(id, fullName, dob, email, password);
+                return new Doctor(userId, doctorId, doctorPassword, dob, null); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,23 +51,20 @@ public class DoctorJDBC implements DoctorManager {
         return null;
     }
 
-
-
-
-    @Override
+    // Método para obtener todos los doctores
     public List<Doctor> readDoctors() {
         List<Doctor> doctors = new ArrayList<>();
-        String sql = "SELECT * FROM Doctor";
+        String sql = "SELECT * FROM doctor";
         try (Statement stmt = manager.getConnection().createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                String id = rs.getString("doctor_id"); // ahora es String
+                Integer userId = rs.getInt("user_id");
+                Integer doctorId = rs.getInt("doctor_id");
+                String doctorPassword = rs.getString("doctor_password");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String fullName = rs.getString("full_name");
-                String email = rs.getString("email");
-                String dobStr = rs.getString("dob");
-                String password = rs.getString("password");
-                LocalDate dob = dobStr != null ? LocalDate.parse(dobStr) : null;
-                doctors.add(new Doctor(id, fullName, dob, email, password));
+
+                doctors.add(new Doctor(userId, doctorId, doctorPassword, dob, null)); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,28 +72,46 @@ public class DoctorJDBC implements DoctorManager {
         return doctors;
     }
 
-
-    @Override
-    public Doctor getDoctorByEmail(String email) {
-        String sql = "SELECT * FROM Doctor WHERE email = ?";
+    // Método para obtener un doctor por su nombre completo
+    public Doctor getDoctorByFullName(String fullName) {
+        String sql = "SELECT * FROM doctor WHERE full_name = ?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setString(1, email);
+            stmt.setString(1, fullName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                String id = rs.getString("doctor_id");
-                String fullName = rs.getString("full_name");
-                String dobStr = rs.getString("dob");
-                String password = rs.getString("password");
+                Integer userId = rs.getInt("user_id");
+                Integer doctorId = rs.getInt("doctor_id");
+                String doctorPassword = rs.getString("doctor_password");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
+                String fullNameDb = rs.getString("full_name");
 
-                LocalDate dob = LocalDate.parse(dobStr);
-
-                return new Doctor(id, fullName, dob, email, password);
+                return new Doctor(userId, doctorId, doctorPassword, dob, null); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    // Método para obtener un doctor por su contraseña
+    public Doctor getDoctorByPassword(String password) {
+        String sql = "SELECT * FROM doctor WHERE doctor_password = ?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, password);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Integer userId = rs.getInt("user_id");
+                Integer doctorId = rs.getInt("doctor_id");
+                String doctorPassword = rs.getString("doctor_password");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
+                String fullName = rs.getString("full_name");
+
+                return new Doctor(userId, doctorId, doctorPassword, dob, null); // null for patients, can be fetched separately if needed
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
-
-
