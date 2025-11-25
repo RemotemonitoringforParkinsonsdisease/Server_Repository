@@ -1,23 +1,10 @@
 package ui;
 
-import POJOs.User;
 import jdbcs.ManagerJDBC;
-import POJOs.Patient;
-import POJOs.Doctor;
-import manageData.ReceiveDataViaNetwork;
-import manageData.SendDataViaNetwork;
-import ui.UI;
 import utilities.Utilities;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +14,7 @@ public class Main {
     private static boolean running = true;
     private static ServerSocket serverSocket;
     private static Thread serverThread;
+
 
     public static void main(String[] args) {
         ManagerJDBC jdbcManager = new ManagerJDBC();
@@ -40,10 +28,10 @@ public class Main {
                 switch (option){
                     case 1: startServer(jdbcManager); break;
                     case 2: stopServer(); break;
-                    case 3: exitServer(); break;
+                    case 3: stopServer();
+                        exitServer();
+                        break;
                     default: System.out.println("Please introduce a valid option.");
-                        continue;
-
                 }
             } while(true);
     }
@@ -111,7 +99,7 @@ public class Main {
         }
     }
     private static void exitServer() {
-        //TODO: Implement exit server
+        System.exit(0);
     }
 }
 

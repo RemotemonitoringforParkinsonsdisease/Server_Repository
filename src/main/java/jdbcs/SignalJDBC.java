@@ -44,7 +44,7 @@ public class SignalJDBC implements SignalManager {
                 String valuesString = rs.getString("values");
                 List<Integer> values = new ArrayList<>();
                 if (valuesString != null && !valuesString.isEmpty()) {
-                    values = signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                    values = null;//signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
                 }
                 Integer samplingRate = rs.getInt("sampling_rate");
 
@@ -72,7 +72,7 @@ public class SignalJDBC implements SignalManager {
                 String valuesString = rs.getString("values");
                 List<Integer> values = new ArrayList<>();
                 if (valuesString != null && !valuesString.isEmpty()) {
-                    values = signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                    values =  null; //signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
                 }
                 Integer samplingRate = rs.getInt("sampling_rate");
 
@@ -101,7 +101,7 @@ public class SignalJDBC implements SignalManager {
                 String valuesString = rs.getString("values");
                 List<Integer> values = new ArrayList<>();
                 if (valuesString != null && !valuesString.isEmpty()) {
-                    values = signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
+                    values = null;//signal.stringToIntValues(valuesString);  // Convertimos el string a lista de enteros
                 }
                 Integer samplingRate = rs.getInt("sampling_rate");
 
