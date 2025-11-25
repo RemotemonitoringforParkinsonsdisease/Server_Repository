@@ -94,8 +94,6 @@ public class UI {
         patient.setDoctorId(doctorId);
         manager.getPatientJDBC().addPatient(patient);
         patientLoggedInMenu(patient);
-
-
     }
     public void patientLoggedInMenu(Patient patient) throws IOException {
         connection.getSendViaNetwork().sendLoggedPatient(patient);
@@ -183,6 +181,7 @@ public class UI {
                 if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
                     connection.getSendViaNetwork().sendString("PASSWORD OK");
                     Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
+                    doctor.setPatients(manager.getPatientJDBC().getPatientsByDoctorId(doctor.getDoctorId()));
                     System.out.println(doctor.toString());
                     doctorLoggedInMenu(doctor);
 

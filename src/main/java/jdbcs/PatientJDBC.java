@@ -20,14 +20,13 @@ public class PatientJDBC implements PatientManager {
 
     // Método para agregar un paciente
     public void addPatient(Patient patient) {
-        String sql = "INSERT INTO patient (user_id, patient_id, doctor_id, full_name, dob, patient_password) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO patient (user_id, doctor_id, full_name, dob, patient_password) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, patient.getUserId());
-            stmt.setInt(2, patient.getPatientId());
-            stmt.setInt(3, patient.getDoctorId());
-            stmt.setString(4, patient.getFullName());
-            stmt.setString(5, patient.getDob().toString());
-            stmt.setString(6, patient.getPatientPassword());
+            stmt.setInt(2, patient.getDoctorId());
+            stmt.setString(3, patient.getFullName());
+            stmt.setString(4, patient.getDob().toString());
+            stmt.setString(5, patient.getPatientPassword());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -182,7 +181,25 @@ public class PatientJDBC implements PatientManager {
         }
         return null; // Si no se encuentra el paciente, se devuelve null
     }
-
-
+    public List<Patient> getPatientsByDoctorId(Integer doctorId) {
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM patient WHERE doctor_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, doctorId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Integer userId = rs.getInt("user_id");
+                Integer patientId = rs.getInt("patient_id");
+                Integer doctorIdDb = rs.getInt("doctor_id");
+                String fullName = rs.getString("full_name");
+                LocalDate dob = LocalDate.parse(rs.getString("dob"));
+                String patientPassword = rs.getString("patient_password");
+                patients.add(new Patient(fullName, userId, patientId, doctorIdDb, patientPassword, dob));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patients;
+    }
 
 }

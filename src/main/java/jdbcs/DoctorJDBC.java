@@ -1,6 +1,7 @@
 package jdbcs;
 
 import POJOs.Doctor;
+import POJOs.Patient;
 import managers.DoctorManager;
 
 import java.sql.*;
@@ -157,7 +158,5 @@ public class DoctorJDBC implements DoctorManager {
         }
         return null;
     }
-
-
 
 }
