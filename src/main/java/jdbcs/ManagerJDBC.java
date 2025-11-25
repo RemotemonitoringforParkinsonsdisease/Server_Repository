@@ -25,6 +25,13 @@ import java.util.Random;
 
 public class ManagerJDBC {
 
+    private Connection c = null;
+    private PatientJDBC patientJDBC;
+    private DoctorJDBC doctorJDBC;
+    private ReportJDBC reportJDBC;
+    private UserJDBC userJDBC;
+    private AdminJDBC adminJDBC;
+    private SignalJDBC signalJDBC;
 
     // CONSTRUCTOR
     public ManagerJDBC() {
@@ -204,13 +211,6 @@ import java.sql.*;
 
 public class ManagerJDBC {
 
-    private Connection c = null;
-    private PatientJDBC patientJDBC;
-    private DoctorJDBC doctorJDBC;
-    private ReportJDBC reportJDBC;
-    private UserJDBC userJDBC;
-    private AdminJDBC adminJDBC;
-    private SignalJDBC signalJDBC;
     private static ManagerJDBC instance;
 
     public ManagerJDBC() {
@@ -229,7 +229,7 @@ public class ManagerJDBC {
                 createTables(conn);
             }
 
-            System.out.println("LungLink database correctly initialized\n");
+            System.out.println("Parkinson database correctly initialized\n");
 
         } catch (Exception e) {
             throw new RuntimeException("Error initializing DB", e);
@@ -272,7 +272,7 @@ public class ManagerJDBC {
                 full_name TEXT NOT NULL,
                 doctor_password TEXT NOT NULL,
                 dob DATE,
-                FOREIGN KEY (user_id) REFERENCES user(user_id)
+                FOREIGN KEY (user_id) REFERENCES user(id)
             );
         """);
 
@@ -286,7 +286,7 @@ public class ManagerJDBC {
                 patient_password TEXT NOT NULL,
                 dob DATE,
                 FOREIGN KEY (doctor_id) REFERENCES doctor(doctor_id),
-                FOREIGN KEY (user_id) REFERENCES user(user_id)
+                FOREIGN KEY (user_id) REFERENCES user(id)
             );
         """);
 
@@ -320,25 +320,5 @@ public class ManagerJDBC {
         } catch (SQLException e) {
 
         }
-
     }
-    public PatientJDBC getPatientJDBC() {
-        return patientJDBC;
-    }
-
-    public DoctorJDBC getDoctorJDBC() {
-        return doctorJDBC;
-    }
-
-    public ReportJDBC getReportJDBC() {
-        return reportJDBC;
-    }
-
-    public UserJDBC getUserJDBC() {
-        return userJDBC;
-    }
-    public AdminJDBC getAdminJDBC() {
-        return adminJDBC;
-    }
-
 }
