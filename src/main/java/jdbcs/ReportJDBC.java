@@ -77,8 +77,8 @@ public class ReportJDBC {
         return reports;
     }
 
-    // Método para obtener los reportes de un paciente específico
-    public List<Report> getReportsByPatient(Integer patientId) {
+    // Método para obtener los reports de un paciente específico
+    public List<Report> getReportsByPatientId(Integer patientId) {
         List<Report> reports = new ArrayList<>();
         String sql = "SELECT * FROM report WHERE patient_id=?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
@@ -99,5 +99,18 @@ public class ReportJDBC {
         }
         return reports;
     }
+
+    // Método para actualizar la observación del doctor en un reporte
+    public void updateDoctorObservation(Integer reportId, String doctorObservation) {
+        String sql = "UPDATE report SET doctor_observation = ? WHERE report_id = ?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, doctorObservation);  // Establecer la nueva observación del doctor
+            stmt.setInt(2, reportId);  // Establecer el report_id en la consulta SQL
+            stmt.executeUpdate();  // Ejecutar la actualización
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

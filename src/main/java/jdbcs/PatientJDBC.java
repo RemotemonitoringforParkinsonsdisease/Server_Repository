@@ -33,26 +33,33 @@ public class PatientJDBC {
         }
     }
 
-    // Método para obtener un paciente por su ID
-    public Patient getPatientById(Integer id) {
+    // Método para obtener un paciente por su patient_id
+    public Patient getPatientByPatientId(Integer patientId) {
         String sql = "SELECT * FROM patient WHERE patient_id=?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setInt(1, patientId); // Establecer el patient_id en la consulta SQL
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Integer userId = rs.getInt("user_id");
-                Integer patientId = rs.getInt("patient_id");
                 Integer doctorId = rs.getInt("doctor_id");
                 String fullName = rs.getString("full_name");
                 LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String patientPassword = rs.getString("patient_password");
 
-                return new Patient(fullName, userId, patientId, doctorId, patientPassword, dob);
+                // Crear el objeto Patient con los datos obtenidos de la base de datos
+                Patient patient = new Patient(fullName, userId, patientId, doctorId, patientPassword, dob);
+
+                // Aquí puedes agregar más lógica si deseas incluir la lista de reportes
+                // Si tienes un método como getReportsByPatientId, puedes llamarlo aquí y agregar los reportes al paciente:
+                List<Report> reports = manager.getReportJDBC().getReportsByPatientId(patientId);
+                patient.setReports(reports);
+
+                return patient;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return null; // Si no se encuentra el paciente, se devuelve null
     }
 
     // Método para obtener todos los pacientes
@@ -75,6 +82,35 @@ public class PatientJDBC {
             e.printStackTrace();
         }
         return patients;
+    }
+
+    public String getPasswordByPatientId(Integer patientId) {
+        String sql = "SELECT patient_password FROM patient WHERE patient_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, patientId); // Establecer el patient_id en la consulta SQL
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("patient_password");  // Devolver la contraseña del paciente
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Si no se encuentra la contraseña, se devuelve null
+    }
+
+
+    public Integer getPatientIdByUserId(Integer userId) {
+        String sql = "SELECT patient_id FROM patient WHERE user_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, userId); // Establecer el user_id en la consulta SQL
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("patient_id"); // Retorna el patient_id encontrado
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Si no se encuentra el paciente, se devuelve null
     }
 
     // Método para obtener un paciente por su email (suponiendo que hay un campo email en la base de datos)
@@ -135,7 +171,7 @@ public class PatientJDBC {
                 String patientPassword = rs.getString("patient_password");
 
                 // Obtener los reportes del paciente
-                List<Report> reports = manager.getReportJDBC().getReportsByPatient(patientId);  // Llamamos al ReportJDBC para obtener los reportes
+                List<Report> reports = manager.getReportJDBC().getReportsByPatientId(patientId);  // Llamamos al ReportJDBC para obtener los reportes
 
                 // Crear el objeto Patient con los datos obtenidos de la base de datos
                 return new Patient(fullName, userId, patientId, doctorId, patientPassword, dob, reports);
@@ -145,5 +181,7 @@ public class PatientJDBC {
         }
         return null; // Si no se encuentra el paciente, se devuelve null
     }
+
+
 
 }

@@ -24,12 +24,13 @@ public class Doctor{
         this.dob = dob;
     }
 
-    public Doctor(Integer userId, Integer doctorId, String doctorPassword, LocalDate dob, List<Patient> patients) {
+    public Doctor(Integer userId, Integer doctorId, String doctorPassword, LocalDate dob, List<Patient> patients, String fullName) {
         this.userId = userId;
         this.doctorId = doctorId;
         this.doctorPassword = doctorPassword;
         this.dob = dob;
         this.patients = patients;
+        this.fullName = fullName;
     }
 
     public Integer getUserId() {
@@ -78,5 +79,16 @@ public class Doctor{
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    @Override
+    public String toString() {
+        return "Doctor{" +
+                "fullName='" + fullName + '\'' +
+                ", userId=" + userId +
+                ", doctorId=" + doctorId +
+                ", doctorPassword='" + doctorPassword + '\'' +
+                ", dob=" + dob +
+                '}';
     }
 }

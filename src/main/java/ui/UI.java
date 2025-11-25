@@ -2,11 +2,7 @@ package ui;
 
 import POJOs.*;
 import jdbcs.ManagerJDBC;
-import manageData.ReceiveDataViaNetwork;
-import manageData.SendDataViaNetwork;
-import managers.PatientManager;
-import managers.DoctorManager;
-import managers.ReportManager;
+
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -75,9 +71,9 @@ public class UI {
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
             System.out.println("User already exists");
-            int userID = manager.getUserJDBC().getUserIdByEmail(email);
+            Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
-            if(manager.getPatientJDBC().getPatientByUserId(userID) != null){
+            if(manager.getPatientJDBC().getPatientIdByUserId(userID) != null){
                 System.out.println("Patient already exists");
                 connection.getSendViaNetwork().sendString("EMAIL ERROR");
                 return;
@@ -87,10 +83,11 @@ public class UI {
             manager.getUserJDBC().addUser(email);
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
-        int doctorId = manager.getDoctorJDBC().getRandomDoctorId(); //TODO
+        Integer doctorId = manager.getDoctorJDBC().getRandomDoctorId();
         Patient patient = connection.getReceiveViaNetwork().receiveRegisteredPatient();
         patient.setUserId(userId);
-        //TODO:Insertamos patient en DB
+        patient.setDoctorId(doctorId);
+        manager.getPatientJDBC().addPatient(patient);
         patientLoggedInMenu(patient);
 
 
@@ -121,13 +118,17 @@ public class UI {
 
     private void createReport(Patient patient) throws IOException {
         Report report = connection.getReceiveViaNetwork().receiveReport();
-        //TODO: Guardad en DB
+        manager.getReportJDBC().addReport(report);
         patient.addReport(report);
-        //TODO: Actualizar patient en DB
         connection.getSendViaNetwork().sendString("REPORT ADDED");
     }
+
     private void exitMenu() {
-        //TODO
+        // Enviar un mensaje de salida al cliente
+        connection.getSendViaNetwork().sendString("EXIT");
+
+        // Liberar los recursos de la conexión
+        connection.releaseResources();  // Si tienes una clase `Connection` que maneja los recursos de la red
     }
 
 
@@ -137,9 +138,9 @@ public class UI {
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
             System.out.println("User already exists");
-            //userId = cogerElIDDeUsuario existente
+            Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
-            if(manager.getDoctorJDBC().getDoctorByUserId(userID) != null){
+            if(manager.getDoctorJDBC().getDoctorIdByUserId(userID) != null){
                 System.out.println("Doctor already exists");
                 connection.getSendViaNetwork().sendString("EMAIL ERROR");
                 return;
@@ -151,7 +152,7 @@ public class UI {
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         Doctor doctor = connection.getReceiveViaNetwork().receiveRegisteredDoctor();
         doctor.setUserId(userId);
-        //TODO: Insertamos doctor en DB
+        manager.getDoctorJDBC().addDoctor(doctor);
         Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
         doctor.setDoctorId(doctorId);
         System.out.println("Sending doctor to app");
@@ -166,7 +167,7 @@ public class UI {
 
             Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
 
-            if(manager.getDoctorJDBC().getDoctorIdByUserId() != null){ //Si existe el doctor
+            if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){ //Si existe el doctor
 
                 Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
                 connection.getSendViaNetwork().sendString("EMAIL OK");
@@ -174,10 +175,8 @@ public class UI {
                 String password = connection.getReceiveViaNetwork().receiveString();
                 if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
                     connection.getSendViaNetwork().sendString("PASSWORD OK");
-
-                    //TODO: GetDoctor From User //userId, doctorId, fullname, password, dob, patients
                     Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
-                    System.out.println(doctor.toString()); //TODO
+                    System.out.println(doctor.toString());
                     doctorLoggedInMenu(doctor);
 
                 } else{
@@ -226,18 +225,16 @@ public class UI {
 
             Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
 
-            if(manager.getPatientJDBC().getPatientIdByUserId() != null){ //Si existe el paciente
+            if(manager.getPatientJDBC().getPatientIdByUserId(userId) != null){ //Si existe el paciente
 
-                Integer patientId = manager.getDoctorJDBC().getPatientIdByUserId(userId);
+                Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
                 connection.getSendViaNetwork().sendString("EMAIL OK");
 
                 String password = connection.getReceiveViaNetwork().receiveString();
-                if(manager.getPatientDoctorJDBC().getPasswordByPatientId(patientId).equals(password)){
+                if(manager.getPatientJDBC().getPasswordByPatientId(patientId).equals(password)){
                     connection.getSendViaNetwork().sendString("PASSWORD OK");
-
-                    //TODO: Get Patient From User //userId, doctorId, fullname, password, dob, patients
                     Patient patient = manager.getPatientJDBC().getPatientByPatientId(patientId);
-                    System.out.println(patient.toString()); //TODO
+                    System.out.println(patient.toString());
                     patientLoggedInMenu(patient);
 
                 } else{

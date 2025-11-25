@@ -5,6 +5,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DoctorJDBC {
 
@@ -29,10 +30,20 @@ public class DoctorJDBC {
         }
     }
 
+    // Método para obtener un doctor aleatorio
+    public Integer getRandomDoctorId() {
+        List<Doctor> doctors = this.readDoctors(); // Método para obtener todos los doctores
+        if (doctors != null && !doctors.isEmpty()) {
+            Random rand = new Random();
+            return doctors.get(rand.nextInt(doctors.size())).getDoctorId(); // Devuelve un doctor aleatorio
+        }
+        return null; // Si no hay doctores, retorna null
+    }
+
 
 
     // Método para obtener un doctor por su ID
-    public Doctor getDoctorById(Integer id) {
+    public Doctor getDoctorByDoctorId(Integer id) {
         String sql = "SELECT * FROM doctor WHERE doctor_id=?";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -44,13 +55,28 @@ public class DoctorJDBC {
                 LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String fullName = rs.getString("full_name");
 
-                return new Doctor(userId, doctorId, doctorPassword, dob, null); // null for patients, can be fetched separately if needed
+                return new Doctor(userId, doctorId, doctorPassword, dob, null, fullName); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    public Integer getDoctorIdByUserId(Integer userId) {
+        String sql = "SELECT doctor_id FROM doctor WHERE user_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, userId); // Establecer el user_id en la consulta SQL
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("doctor_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Si no se encuentra el doctor, se devuelve null
+    }
+
 
     // Método para obtener todos los doctores
     public List<Doctor> readDoctors() {
@@ -65,7 +91,7 @@ public class DoctorJDBC {
                 LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String fullName = rs.getString("full_name");
 
-                doctors.add(new Doctor(userId, doctorId, doctorPassword, dob, null)); // null for patients, can be fetched separately if needed
+                doctors.add(new Doctor(userId, doctorId, doctorPassword, dob, null, fullName)); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,12 +112,27 @@ public class DoctorJDBC {
                 LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String fullNameDb = rs.getString("full_name");
 
-                return new Doctor(userId, doctorId, doctorPassword, dob, null); // null for patients, can be fetched separately if needed
+                return new Doctor(userId, doctorId, doctorPassword, dob, null, fullName); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    // Método para obtener la contraseña del doctor por su doctor_id
+    public String getPasswordByDoctorId(Integer doctorId) {
+        String sql = "SELECT doctor_password FROM doctor WHERE doctor_id=?";
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, doctorId); // Establecer el doctor_id en la consulta SQL
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("doctor_password");  // Devolver la contraseña del doctor
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Si no se encuentra la contraseña, se devuelve null
     }
 
     // Método para obtener un doctor por su contraseña
@@ -107,12 +148,14 @@ public class DoctorJDBC {
                 LocalDate dob = LocalDate.parse(rs.getString("dob"));
                 String fullName = rs.getString("full_name");
 
-                return new Doctor(userId, doctorId, doctorPassword, dob, null); // null for patients, can be fetched separately if needed
+                return new Doctor(userId, doctorId, doctorPassword, dob, null, fullName); // null for patients, can be fetched separately if needed
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+
 
 }

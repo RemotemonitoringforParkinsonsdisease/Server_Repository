@@ -30,7 +30,7 @@ public class SignalJDBC {
         }
     }
 
-
+    /*
     // Método para obtener una señal por su ID
     public Signal getSignalById(Integer signalId) {
         String sql = "SELECT * FROM signal WHERE signal_id=?";
@@ -114,4 +114,6 @@ public class SignalJDBC {
         }
         return signals;
     }
+
+     */
 }

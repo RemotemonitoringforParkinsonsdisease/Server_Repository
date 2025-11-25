@@ -101,4 +101,16 @@ public class Patient{
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
+    @Override
+    public String toString() {
+        return "Patient{" +
+                "fullName='" + fullName + '\'' +
+                ", userId=" + userId +
+                ", patientId=" + patientId +
+                ", doctorId=" + doctorId +
+                ", patientPassword='" + patientPassword + '\'' +
+                ", dob=" + dob +
+                '}';
+    }
 }
