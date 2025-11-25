@@ -50,6 +50,7 @@ public class UI {
 
     private void patientPreLoggedMenu() throws IOException {
        int option = connection.getReceiveViaNetwork().receiveInt();
+       System.out.println(option);
        switch (option){
            case 1: registerPatient(); break;
            case 2: logInPatient(); break;
@@ -58,6 +59,7 @@ public class UI {
     }
     private void doctorPreLoggedMenu() {
         int option = connection.getReceiveViaNetwork().receiveInt();
+        System.out.println(option);
         switch (option){
             case 1: registerDoctor(); break;
             case 2: loginDoctor(); break;
@@ -78,9 +80,12 @@ public class UI {
                 connection.getSendViaNetwork().sendString("EMAIL ERROR");
                 return;
             }
+            System.out.println("Email: " + email + " is OK");
             connection.getSendViaNetwork().sendString("EMAIL OK");
         } else{
+            System.out.println("Email: " + email + " is OK");
             manager.getUserJDBC().addUser(email);
+            connection.getSendViaNetwork().sendString("EMAIL OK");
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         Integer doctorId = manager.getDoctorJDBC().getRandomDoctorId();
@@ -147,7 +152,9 @@ public class UI {
             }
             connection.getSendViaNetwork().sendString("EMAIL OK");
         } else{
+            System.out.println("Email: " + email + " is OK");
             manager.getUserJDBC().addUser(email);
+            connection.getSendViaNetwork().sendString("EMAIL OK");
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         Doctor doctor = connection.getReceiveViaNetwork().receiveRegisteredDoctor();

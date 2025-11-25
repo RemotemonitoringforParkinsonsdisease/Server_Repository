@@ -67,6 +67,10 @@ public class SendDataViaNetwork {
         }
     }
     public void sendPatients(List<Patient> patients) {
+        if(patients == null){
+            sendInt(0);
+            return;
+        }
         sendInt(patients.size());
         for(Patient p : patients){
             sendPatientToDoctor(p);
@@ -96,6 +100,10 @@ public class SendDataViaNetwork {
     }
     public void sendReports(List<Report> reports){
         try{
+            if(reports == null){
+                sendInt(0);
+                return;
+            }
             sendInt(reports.size());
             for (Report r : reports) {
                 dataOutputStream.writeInt(r.getReportId());
@@ -123,6 +131,10 @@ public class SendDataViaNetwork {
         dataOutputStream.writeUTF(sb.toString());
     }
     public void sendSignals(List<Signal> signals) throws IOException{
+        if(signals == null){
+            dataOutputStream.writeInt(0);
+            return;
+        }
         dataOutputStream.writeInt(signals.size());
 
         for (Signal signal : signals) {
@@ -134,6 +146,10 @@ public class SendDataViaNetwork {
     }
 
     public void sendListOfIntegerValues(List<Integer> values) throws IOException{
+        if(values == null){
+            dataOutputStream.writeInt(0);
+            return;
+        }
         dataOutputStream.writeInt(values.size());
         for (Integer value : values) {
             dataOutputStream.writeInt(value);

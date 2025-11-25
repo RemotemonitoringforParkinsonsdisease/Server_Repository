@@ -24,7 +24,7 @@ public class Main {
                 System.out.println("1) Start Server");
                 System.out.println("2) Stop Server");
                 System.out.println("3) Exit");
-                int option = Utilities.readInteger("Select an option: ");
+                int option = Utilities.readInteger("Select an option: \n");
                 switch (option){
                     case 1: startServer(jdbcManager); break;
                     case 2: stopServer(); break;
@@ -39,6 +39,7 @@ public class Main {
         //TODO: Implement admin login menu
     }
     private static void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
+        System.out.println("Handling new client " + socket.getInetAddress().toString());
         try{
             UI ui = new UI(socket, jdbcManager);
             ui.run();
