@@ -25,7 +25,6 @@ public class SendDataViaNetwork {
     public void sendString(String s) {
         try {
             dataOutputStream.writeUTF(s);
-            System.out.println(s);
         } catch (IOException e) {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending String", e);
         }

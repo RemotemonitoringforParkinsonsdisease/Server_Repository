@@ -82,9 +82,10 @@ public class UI {
                 System.out.println("Patient already exists");
                 connection.getSendViaNetwork().sendString("EMAIL ERROR");
                 return;
+            }else {
+                System.out.println("Email: " + email + " is OK");
+                connection.getSendViaNetwork().sendString("EMAIL OK");
             }
-            System.out.println("Email: " + email + " is OK");
-            connection.getSendViaNetwork().sendString("EMAIL OK");
         } else{
             System.out.println("Email: " + email + " is OK");
             manager.getUserJDBC().addUser(email);
