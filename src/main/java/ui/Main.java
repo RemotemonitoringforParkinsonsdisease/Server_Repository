@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
         ManagerJDBC jdbcManager = new ManagerJDBC();
-        adminLoginMenu();
+        //adminLoginMenu();
             do{
                 System.out.println("SERVER MENU (PORT: " + PORT + "):");
                 System.out.println("1) Start Server");

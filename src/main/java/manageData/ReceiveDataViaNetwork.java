@@ -68,7 +68,6 @@ public class ReceiveDataViaNetwork {
         Report report = null;
 
         try {
-            Integer reportId = dataInputStream.readInt();
             Integer patientId = dataInputStream.readInt();
             String date = dataInputStream.readUTF();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -78,7 +77,7 @@ public class ReceiveDataViaNetwork {
             String patientObservation = dataInputStream.readUTF();
             String doctorObservation = dataInputStream.readUTF();
 
-            report = new Report(reportId, patientId, reportDate, signals, symptoms, patientObservation, doctorObservation);
+            report = new Report(patientId, reportDate, patientObservation, doctorObservation, symptoms, signals);
         } catch (IOException e) {
             System.err.println("Error al leer el flujo de entrada: " + e.getMessage());
         }
@@ -94,12 +93,11 @@ public class ReceiveDataViaNetwork {
             }
 
             for (int i = 0; i < numSignals; i++) {
-                Integer signalId = dataInputStream.readInt();
                 String typeSignal = dataInputStream.readUTF();
                 SignalType signalType = SignalType.valueOf(typeSignal);
                 Integer samplingRate = dataInputStream.readInt();
                 List<Integer> values = receiveListOfIntegerValues();
-                Signal signal = new Signal(signalId, signalType, samplingRate, values);
+                Signal signal = new Signal(signalType, samplingRate, values);
                 signals.add(signal);
             }
             return signals;

@@ -130,7 +130,9 @@ public class UI {
 
     private void createReport(Patient patient) throws IOException {
         Report report = connection.getReceiveViaNetwork().receiveReport();
+        System.out.println(report);
         manager.getReportJDBC().addReport(report);
+        //report.setReportId(manager.getReportJDBC().getReportIdByPatientId(patient.getPatientId()));
         patient.addReport(report);
         connection.getSendViaNetwork().sendString("REPORT ADDED");
     }

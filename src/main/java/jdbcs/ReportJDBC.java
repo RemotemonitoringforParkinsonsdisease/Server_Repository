@@ -113,6 +113,4 @@ public class ReportJDBC implements ReportManager {
             e.printStackTrace();
         }
     }
-
-
 }

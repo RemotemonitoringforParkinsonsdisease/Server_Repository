@@ -22,8 +22,7 @@ public class Signal {
         this.values = new ArrayList<>();
     }
 
-    public Signal(Integer signalId, SignalType signalType, Integer samplingRate, List<Integer> values) {
-        this.signalId = signalId;
+    public Signal(SignalType signalType, Integer samplingRate, List<Integer> values) {
         this.signalType = signalType;
         this.values = values;
         this.samplingRate = samplingRate;

@@ -110,4 +110,17 @@ public class Report {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "reportId=" + reportId +
+                ", patientId=" + patientId +
+                ", reportDate=" + reportDate +
+                ", signals=" + signals +
+                ", symptoms=" + symptoms +
+                ", patientObservation='" + patientObservation + '\'' +
+                ", doctorObservation='" + doctorObservation + '\'' +
+                '}';
+    }
 }
