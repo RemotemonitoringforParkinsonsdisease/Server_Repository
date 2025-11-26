@@ -136,11 +136,11 @@ public class UI {
     }
 
     private void exitMenu() {
-        // Enviar un mensaje de salida al cliente
-        connection.getSendViaNetwork().sendString("EXIT");
+        // Cerrar la conexión de este cliente
+        connection.releaseResources();
 
-        // Liberar los recursos de la conexión
-        connection.releaseResources();  // Si tienes una clase `Connection` que maneja los recursos de la red
+        // IMPORTANTE: parar el menú de este cliente
+        throw new RuntimeException("Client exited normally");
     }
 
 
@@ -222,7 +222,7 @@ public class UI {
         int option;
         do{
             switch(option = connection.getReceiveViaNetwork().receiveInt()){
-                case 0: exitMenu(); break; //Doctor wants to exit
+                case 0: doctorPreLoggedMenu(); break; //Doctor wants to logOut
                 case 1: doctorPatientMenu(); break; //Doctor wants to see patients
             }
         } while(option != 0);
