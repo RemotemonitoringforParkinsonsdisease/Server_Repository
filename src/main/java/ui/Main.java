@@ -13,8 +13,6 @@ public class Main {
     private static final int PORT = 9000;
     private static boolean running = false;
     private static ServerSocket serverSocket;
-    private static Thread serverThread;
-
 
     public static void main(String[] args) {
         ManagerJDBC jdbcManager = new ManagerJDBC();
@@ -36,7 +34,11 @@ public class Main {
             } while(true);
     }
     private static void adminLoginMenu() {
-        //TODO: Implement admin login menu
+        do{
+            String email = Utilities.readString("Enter admin email: ");
+            String password = Utilities.readString("Enter admin password: ");
+            //TODO: comprobar credenciales admin
+        } while(true);
     }
     private static void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
         System.out.println("Handling new client " + socket.getInetAddress().toString());
