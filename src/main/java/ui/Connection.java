@@ -3,45 +3,48 @@ package ui;
 import manageData.ReceiveDataViaNetwork;
 import manageData.SendDataViaNetwork;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Connection {
-    private Socket socket;
-    private SendDataViaNetwork sendDataViaNetwork;
-    private ReceiveDataViaNetwork receiveDataViaNetwork;
+
+    private final Socket socket;
+    private final DataInputStream in;
+    private final DataOutputStream out;
+
+    private final SendDataViaNetwork send;
+    private final ReceiveDataViaNetwork receive;
 
     public Connection(Socket socket) {
         try {
-            this.socket = socket; //TODO: Revisar
-            this. sendDataViaNetwork = new SendDataViaNetwork(socket);
-            this. receiveDataViaNetwork = new ReceiveDataViaNetwork(socket);
-        } catch (Exception e) {
-            System.out.println("Error establishing connection"); //TODO: Revisar excepciones
+            this.socket = socket;
+
+            this.in = new DataInputStream(socket.getInputStream());
+            this.out = new DataOutputStream(socket.getOutputStream());
+
+            this.send = new SendDataViaNetwork(out);
+            this.receive = new ReceiveDataViaNetwork(in);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public SendDataViaNetwork getSendViaNetwork() {
-        return sendDataViaNetwork;
+        return send;
     }
 
     public ReceiveDataViaNetwork getReceiveViaNetwork() {
-        return receiveDataViaNetwork;
+        return receive;
     }
 
-    void releaseResources() {
-        sendDataViaNetwork.releaseResources();
-        receiveDataViaNetwork.releaseResources();
+    public void releaseResources() {
         try {
+            in.close();
+            out.close();
             socket.close();
-        } catch (IOException ex) {
-            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ignored) {}
     }
-
-
-
 }

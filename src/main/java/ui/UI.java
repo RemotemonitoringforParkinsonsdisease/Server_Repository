@@ -174,7 +174,6 @@ public class UI {
             Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
             doctor.setDoctorId(doctorId);
             doctor.setPatients(new ArrayList<>());
-            connection.getSendViaNetwork().sendLoggedDoctor(doctor);
             System.out.println("Doctor registered");
             return;
         } while(true);

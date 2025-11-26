@@ -10,15 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SendDataViaNetwork {
-    private final DataOutputStream dataOutputStream;
+    private DataOutputStream dataOutputStream;
 
-    public SendDataViaNetwork(Socket socket) {
-        DataOutputStream dos = null;
-        try {
-            dos = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, null, e);
-        }
+    public SendDataViaNetwork(DataOutputStream dos) {
         this.dataOutputStream = dos;
     }
 

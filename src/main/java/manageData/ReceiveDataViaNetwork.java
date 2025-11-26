@@ -13,15 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ReceiveDataViaNetwork {
-    private final DataInputStream dataInputStream;
+    private DataInputStream dataInputStream;
 
-    public ReceiveDataViaNetwork(Socket socket) {
-        DataInputStream dis = null;
-        try {
-            dis = new DataInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            Logger.getLogger(ReceiveDataViaNetwork.class.getName()).log(Level.SEVERE, null, e);
-        }
+    public ReceiveDataViaNetwork(DataInputStream dis) {
         this.dataInputStream = dis;
     }
 
