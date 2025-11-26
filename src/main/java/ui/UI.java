@@ -58,6 +58,7 @@ public class UI {
     }
     private void doctorPreLoggedMenu() {
         do{
+            System.out.println("Idle");
             int option = connection.getReceiveViaNetwork().receiveInt();
             switch (option){
                 case 1: System.out.println("Registering doctor");registerDoctor(); break;
@@ -143,70 +144,78 @@ public class UI {
 
 
     private void registerDoctor() {
-        String email = connection.getReceiveViaNetwork().receiveString(); // email
+        do{
+            String email = connection.getReceiveViaNetwork().receiveString(); //
+            System.out.println(email);// email
 
-        if (manager.getUserJDBC().getUserByEmail(email) != null) {
+            if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
-            System.out.println("User already exists");
-            Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
+                System.out.println("User already exists");
+                Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
-            if(manager.getDoctorJDBC().getDoctorIdByUserId(userID) != null){
-                System.out.println("Doctor already exists");
-                connection.getSendViaNetwork().sendString("EMAIL ERROR");
-                return;
+                if(manager.getDoctorJDBC().getDoctorIdByUserId(userID) != null){
+                    System.out.println("Doctor already exists");
+                    connection.getSendViaNetwork().sendString("EMAIL ERROR");
+                    return;
+                } else{
+                    connection.getSendViaNetwork().sendString("EMAIL OK");
+                }
+            } else{
+                System.out.println("Email: " + email + " is OK");
+                manager.getUserJDBC().addUser(email);
+                String message = "EMAIL OK";
+                connection.getSendViaNetwork().sendString(message);
             }
-            connection.getSendViaNetwork().sendString("EMAIL OK");
-        } else{
-            System.out.println("Email: " + email + " is OK");
-            manager.getUserJDBC().addUser(email);
-            connection.getSendViaNetwork().sendString("EMAIL OK");
-        }
-        Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
-        Doctor doctor = connection.getReceiveViaNetwork().receiveRegisteredDoctor();
-        doctor.setUserId(userId);
-        manager.getDoctorJDBC().addDoctor(doctor);
-        Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
-        doctor.setDoctorId(doctorId);
-        doctor.setPatients(new ArrayList<>());
-        connection.getSendViaNetwork().sendLoggedDoctor(doctor);
-        System.out.println("Doctor registered");
+            Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
+            Doctor doctor = connection.getReceiveViaNetwork().receiveRegisteredDoctor();
+            doctor.setUserId(userId);
+            manager.getDoctorJDBC().addDoctor(doctor);
+            Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+            doctor.setDoctorId(doctorId);
+            doctor.setPatients(new ArrayList<>());
+            connection.getSendViaNetwork().sendLoggedDoctor(doctor);
+            System.out.println("Doctor registered");
+            return;
+        } while(true);
+
     }
 
     private void loginDoctor() {
-        String doctorEmail = connection.getReceiveViaNetwork().receiveString();
+        do{ String doctorEmail = connection.getReceiveViaNetwork().receiveString();
 
-        if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) { //Si existe el usuario
+            if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) { //Si existe el usuario
 
-            Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
+                Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
 
-            if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){ //Si existe el doctor
+                if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){ //Si existe el doctor
 
-                Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
-                System.out.println("EMAIL OK");
-                connection.getSendViaNetwork().sendString("EMAIL OK");
+                    Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+                    System.out.println("EMAIL OK");
+                    connection.getSendViaNetwork().sendString("EMAIL OK");
 
-                String password = connection.getReceiveViaNetwork().receiveString();
-                if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
-                    System.out.println("PASSWORD OK");
-                    connection.getSendViaNetwork().sendString("PASSWORD OK");
-                    Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
-                    doctor.setPatients(manager.getPatientJDBC().getPatientsByDoctorId(doctor.getDoctorId()));
-                    System.out.println(doctor.toString());
-                    doctorLoggedInMenu(doctor);
+                    String password = connection.getReceiveViaNetwork().receiveString();
+                    if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
+                        System.out.println("PASSWORD OK");
+                        connection.getSendViaNetwork().sendString("PASSWORD OK");
+                        Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
+                        doctor.setPatients(manager.getPatientJDBC().getPatientsByDoctorId(doctor.getDoctorId()));
+                        System.out.println(doctor.toString());
+                        doctorLoggedInMenu(doctor);
 
+                    } else{
+                        System.out.println("PASSWORD ERROR");
+                        connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                    }
                 } else{
-                    System.out.println("PASSWORD ERROR");
-                    connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                    System.out.println("NO DOCTOR FOUND");
+                    connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
                 }
             } else{
-                System.out.println("NO DOCTOR FOUND");
-                connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
+                System.out.println("NO USER FOUND");
+                connection.getSendViaNetwork().sendString("NO USER FOUND");
             }
-        } else{
-            System.out.println("NO USER FOUND");
-            connection.getSendViaNetwork().sendString("NO USER FOUND");
-        }
 
+        } while (true);
     }
     private void doctorLoggedInMenu(Doctor doctor) {
         connection.getSendViaNetwork().sendLoggedDoctor(doctor);
