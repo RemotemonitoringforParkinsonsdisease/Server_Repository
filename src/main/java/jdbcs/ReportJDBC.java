@@ -22,7 +22,7 @@ public class ReportJDBC implements ReportManager {
 
     // Método para agregar un reporte
     public void addReport(Report report) {
-        String sql = "INSERT INTO report (report_date, patient_id, patient_observation, doctor_observation, symptoms, singal_file_name) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO report (report_date, patient_id, patient_observation, doctor_observation, symptoms_list, singal_file_name) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
             stmt.setString(1, report.getReportDate().toString());
             stmt.setInt(2, report.getPatientId());
