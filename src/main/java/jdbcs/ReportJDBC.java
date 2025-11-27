@@ -91,8 +91,11 @@ public class ReportJDBC implements ReportManager {
                 LocalDate reportDate = LocalDate.parse(rs.getString("report_date"));
                 String patientObservation = rs.getString("patient_observation");
                 String doctorObservation = rs.getString("doctor_observation");
+                String symptoms = rs.getString("symptoms");
+                String signalsFilePath = rs.getString("signals_file_name");
 
-                Report r = new Report(patientId, reportDate, patientObservation, doctorObservation, null, null);
+                //TODO passar symptoms a lista
+                Report r = new Report(patientId, reportDate, patientObservation, doctorObservation, null, signalsFilePath);
                 r.setReportId(reportId);
                 reports.add(r);
             }
@@ -112,5 +115,23 @@ public class ReportJDBC implements ReportManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Integer getReportIdBySignalFilePath(String signalsFilePath) {
+        String sql = "SELECT report_id FROM report WHERE signal_file_name = ?";
+
+        try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, signalsFilePath);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("report_id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null; // No encontrado
     }
 }

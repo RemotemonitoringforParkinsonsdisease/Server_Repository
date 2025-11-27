@@ -132,7 +132,7 @@ public class UI {
         Report report = connection.getReceiveViaNetwork().receiveReport();
         System.out.println(report);
         manager.getReportJDBC().addReport(report);
-        //report.setReportId(manager.getReportJDBC().getReportIdByPatientId(patient.getPatientId()));
+        report.setReportId(manager.getReportJDBC().getReportIdBySignalFilePath(report.getSignalsFilePath()));
         patient.addReport(report);
         connection.getSendViaNetwork().sendString("REPORT ADDED");
     }

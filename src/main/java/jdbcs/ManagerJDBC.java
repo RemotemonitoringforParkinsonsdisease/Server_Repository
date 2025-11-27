@@ -103,6 +103,7 @@ public class ManagerJDBC {
                 patient_observation TEXT,
                 doctor_observation TEXT,
                 symptoms_list TEXT,
+                signals_file_name TEXT,
                 FOREIGN KEY (patient_id) REFERENCES patient(patient_id)
             );
         """);
