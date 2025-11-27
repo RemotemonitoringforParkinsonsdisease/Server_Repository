@@ -2,6 +2,7 @@ package jdbcs;
 
 import POJOs.Report;
 import POJOs.SignalType;
+import POJOs.Symptoms;
 import managers.ReportManager;
 
 import java.sql.*;
@@ -91,11 +92,12 @@ public class ReportJDBC implements ReportManager {
                 LocalDate reportDate = LocalDate.parse(rs.getString("report_date"));
                 String patientObservation = rs.getString("patient_observation");
                 String doctorObservation = rs.getString("doctor_observation");
-                String symptoms = rs.getString("symptoms");
+                String stringSymptoms = rs.getString("symptoms");
                 String signalsFilePath = rs.getString("signals_file_name");
+                List <Symptoms> symptomsList = parseSymptoms(stringSymptoms);
 
                 //TODO passar symptoms a lista
-                Report r = new Report(patientId, reportDate, patientObservation, doctorObservation, null, signalsFilePath);
+                Report r = new Report(patientId, reportDate, patientObservation, doctorObservation, symptomsList, signalsFilePath);
                 r.setReportId(reportId);
                 reports.add(r);
             }
@@ -103,6 +105,23 @@ public class ReportJDBC implements ReportManager {
             e.printStackTrace();
         }
         return reports;
+    }
+
+    //TODO mirar donde metemos este método
+    public List<Symptoms> parseSymptoms(String symptomsStr) {
+        List<Symptoms> symptoms = new ArrayList<>();
+
+        if (symptomsStr == null || symptomsStr.isEmpty()) {
+            return symptoms; // lista vacía
+        }
+
+        String[] tokens = symptomsStr.split(",");
+
+        for (String token : tokens) {
+            symptoms.add(Symptoms.valueOf(token));
+        }
+
+        return symptoms;
     }
 
     // Método para actualizar la observación del doctor en un reporte
