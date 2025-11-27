@@ -111,7 +111,7 @@ public class UI {
             switch (option = connection.getReceiveViaNetwork().receiveInt()){
                 case 1: seePatientInfo(patient); break;
                 case 2: createReport(patient); break;
-                case 3: exitMenu(); break;
+                case 3: this.patientPreLoggedMenu();
             }
         } while (option != 3);
     }
