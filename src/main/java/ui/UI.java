@@ -252,32 +252,38 @@ public class UI {
 
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
+        do{
+            if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
 
-        if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
+                Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
 
-            Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
+                if (manager.getPatientJDBC().getPatientIdByUserId(userId) != null) { //Si existe el paciente
 
-            if(manager.getPatientJDBC().getPatientIdByUserId(userId) != null){ //Si existe el paciente
+                    Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
+                    connection.getSendViaNetwork().sendString("EMAIL OK");
 
-                Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
-                connection.getSendViaNetwork().sendString("EMAIL OK");
+                    String password = connection.getReceiveViaNetwork().receiveString();
+                    if (manager.getPatientJDBC().getPasswordByPatientId(patientId).equals(password)) {
+                        connection.getSendViaNetwork().sendString("PASSWORD OK");
+                        Patient patient = manager.getPatientJDBC().getPatientByPatientId(patientId);
+                        System.out.println(patient.toString());
+                        patientLoggedInMenu(patient);
 
-                String password = connection.getReceiveViaNetwork().receiveString();
-                if(manager.getPatientJDBC().getPasswordByPatientId(patientId).equals(password)){
-                    connection.getSendViaNetwork().sendString("PASSWORD OK");
-                    Patient patient = manager.getPatientJDBC().getPatientByPatientId(patientId);
-                    System.out.println(patient.toString());
-                    patientLoggedInMenu(patient);
-
-                } else{
-                    connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                    } else {
+                        connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                        System.out.println("PASSWORD ERROR");
+                        this.patientPreLoggedMenu();
+                    }
+                } else {
+                    connection.getSendViaNetwork().sendString("NO PATIENT FOUND");
+                    System.out.println("NO PATIENT FOUND");
+                    this.patientPreLoggedMenu();
                 }
-            } else{
-                connection.getSendViaNetwork().sendString("NO PATIENT FOUND");
+            } else {
+                connection.getSendViaNetwork().sendString("NO USER FOUND");
+                System.out.println("NO USER FOUND");
+                this.patientPreLoggedMenu();
             }
-        } else{
-            connection.getSendViaNetwork().sendString("NO USER FOUND");
-        }
-
+        }  while(true);
     }
 }
