@@ -183,8 +183,8 @@ public class UI {
     }
 
     private void loginDoctor() {
-        do{ String doctorEmail = connection.getReceiveViaNetwork().receiveString();
-
+        do{
+            String doctorEmail = connection.getReceiveViaNetwork().receiveString();
             if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) { //Si existe el usuario
 
                 Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
@@ -207,14 +207,17 @@ public class UI {
                     } else{
                         System.out.println("PASSWORD ERROR");
                         connection.getSendViaNetwork().sendString("PASSWORD ERROR");
+                        return;
                     }
                 } else{
                     System.out.println("NO DOCTOR FOUND");
                     connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
+                    return;
                 }
             } else{
                 System.out.println("NO USER FOUND");
                 connection.getSendViaNetwork().sendString("NO USER FOUND");
+                return;
             }
 
         } while (true);
