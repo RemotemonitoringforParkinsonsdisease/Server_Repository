@@ -8,7 +8,7 @@ public class Report {
     private Integer reportId;
     private Integer patientId;
     private LocalDate reportDate;
-    private List<Signal> signals;
+    private String signalsFilePath;
     private List<Symptoms> symptoms;
     private String patientObservation;
     private String doctorObservation;
@@ -20,23 +20,23 @@ public class Report {
         this.patientObservation = patientObservation;
     }
 
-    public Report(Integer reportId, Integer patientId, LocalDate reportDate, List<Signal> signals, List<Symptoms> symptoms, String patientObservation, String doctorObservation) {
+    public Report(Integer reportId, Integer patientId, LocalDate reportDate, String signalsFilePath, List<Symptoms> symptoms, String patientObservation, String doctorObservation) {
         this.reportId = reportId;
         this.patientId = patientId;
         this.reportDate = reportDate;
-        this.signals = signals;
+        this.signalsFilePath = signalsFilePath;
         this.symptoms = symptoms;
         this.patientObservation = patientObservation;
         this.doctorObservation = doctorObservation;
     }
 
-    public Report(Integer patientId, LocalDate reportDate, String patientObservation, String doctorObservation, List<Symptoms> symptoms, List<Signal> signals) {
+    public Report(Integer patientId, LocalDate reportDate, String patientObservation, String doctorObservation, List<Symptoms> symptoms, String signalsFilePath) {
         this.patientId = patientId;
         this.reportDate = reportDate;
         this.patientObservation = patientObservation;
         this.doctorObservation = doctorObservation;
         this.symptoms = symptoms;
-        this.signals = signals;
+        this.signalsFilePath = signalsFilePath;
     }
 
     public Report(Integer reportId, Integer patientId, LocalDate reportDate, String patientObservation, String doctorObservation) {
@@ -71,12 +71,12 @@ public class Report {
         this.reportDate = reportDate;
     }
 
-    public List<Signal> getSignals() {
-        return signals;
+    public String getSignals() {
+        return signalsFilePath;
     }
 
-    public void setSignals(List<Signal> signals) {
-        this.signals = signals;
+    public void setSignals(String signalsFilePath) {
+        this.signalsFilePath = signalsFilePath;
     }
 
     public List<Symptoms> getSymptoms() {
@@ -103,12 +103,8 @@ public class Report {
         this.doctorObservation = doctorObservation;
     }
 
-    public Signal getSignalByType(SignalType type) {
-        if (signals == null) return null;
-        for (Signal s : signals) {
-            if (s.getSignalType() == type) return s;
-        }
-        return null;
+    public String getSignalsFilePath() {
+        return signalsFilePath;
     }
 
     @Override
@@ -117,10 +113,12 @@ public class Report {
                 "reportId=" + reportId +
                 ", patientId=" + patientId +
                 ", reportDate=" + reportDate +
-                ", signals=" + signals +
+                ", signalsFilePath=" + signalsFilePath +
                 ", symptoms=" + symptoms +
                 ", patientObservation='" + patientObservation + '\'' +
                 ", doctorObservation='" + doctorObservation + '\'' +
                 '}';
     }
+
+
 }

@@ -11,7 +11,6 @@ public class ManagerJDBC {
     private ReportJDBC reportJDBC;
     private UserJDBC userJDBC;
     private AdminJDBC adminJDBC;
-    private SignalJDBC signalJDBC;
 
     public ManagerJDBC() {
         try {
@@ -39,7 +38,6 @@ public class ManagerJDBC {
         patientJDBC = new PatientJDBC(this);
         reportJDBC = new ReportJDBC(this);
         adminJDBC = new AdminJDBC(this);
-        signalJDBC = new SignalJDBC(this);
     }
 
     public static synchronized ManagerJDBC getInstance() {
@@ -109,17 +107,6 @@ public class ManagerJDBC {
             );
         """);
 
-            // Crear tabla de signal
-            stmt.executeUpdate("""
-            CREATE TABLE IF NOT EXISTS signal (
-                signal_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                report_id INTEGER NOT NULL,
-                signal_type TEXT NOT NULL,
-                signal_values TEXT,  -- Se guardan los valores de la señal como texto
-                sampling_rate INTEGER,
-                FOREIGN KEY (report_id) REFERENCES report(report_id)
-            );
-        """);
 
             System.out.println("Tablas creadas correctamente o ya verificadas");
 

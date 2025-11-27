@@ -3,6 +3,8 @@ package manageData;
 import POJOs.*;
 
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
@@ -103,8 +105,8 @@ public class SendDataViaNetwork {
                 dataOutputStream.writeInt(r.getReportId());
                 dataOutputStream.writeInt(r.getPatientId());
                 dataOutputStream.writeUTF(r.getReportDate().toString());
+                sendCSVFile(r.getSignalsFilePath());
                 sendSymptoms(r.getSymptoms());
-                sendSignals(r.getSignals());
                 dataOutputStream.writeUTF(r.getPatientObservation());
                 dataOutputStream.writeUTF(r.getDoctorObservation());
                 dataOutputStream.flush();
@@ -124,20 +126,6 @@ public class SendDataViaNetwork {
         }
         dataOutputStream.writeUTF(sb.toString());
     }
-    public void sendSignals(List<Signal> signals) throws IOException{
-        if(signals == null){
-            dataOutputStream.writeInt(0);
-            return;
-        }
-        dataOutputStream.writeInt(signals.size());
-
-        for (Signal signal : signals) {
-            dataOutputStream.writeInt(signal.getSignalId());
-            dataOutputStream.writeUTF(signal.getSignalType().name());
-            dataOutputStream.writeInt(signal.getSamplingRate());
-            sendListOfIntegerValues(signal.getValues());
-        }
-    }
 
     public void sendListOfIntegerValues(List<Integer> values) throws IOException{
         if(values == null){
@@ -155,6 +143,28 @@ public class SendDataViaNetwork {
         } catch (IOException ex) {
             Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, null, ex);
             }
+    }
+
+    public void sendCSVFile (String filePath) throws IOException {
+        File file = new File(filePath);
+        FileInputStream fis = new FileInputStream(file);
+
+        // 1. Enviar el nombre del archivo
+        dataOutputStream.writeUTF(file.getName());
+
+        // 2. Enviar tamaño del archivo
+        dataOutputStream.writeLong(file.length());
+
+        // 3. Enviar contenido
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            dataOutputStream.write(buffer, 0, bytesRead);
+        }
+
+        dataOutputStream.flush();
+        fis.close();
     }
 
     public void sendUser(User user) {
