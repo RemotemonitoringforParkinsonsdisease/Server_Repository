@@ -127,16 +127,6 @@ public class SendDataViaNetwork {
         dataOutputStream.writeUTF(sb.toString());
     }
 
-    public void sendListOfIntegerValues(List<Integer> values) throws IOException{
-        if(values == null){
-            dataOutputStream.writeInt(0);
-            return;
-        }
-        dataOutputStream.writeInt(values.size());
-        for (Integer value : values) {
-            dataOutputStream.writeInt(value);
-        }
-    }
     public void releaseResources() {
         try {
             dataOutputStream.close();
