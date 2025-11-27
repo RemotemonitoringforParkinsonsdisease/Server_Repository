@@ -5,6 +5,7 @@ import POJOs.SignalType;
 import POJOs.Symptoms;
 import managers.ReportManager;
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,13 +22,14 @@ public class ReportJDBC implements ReportManager {
 
     // Método para agregar un reporte
     public void addReport(Report report) {
-        String sql = "INSERT INTO report (report_id, report_date, patient_id, patient_observation, doctor_observation) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO report (report_date, patient_id, patient_observation, doctor_observation, symptoms, singal_file_name) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, report.getReportId());
-            stmt.setString(2, report.getReportDate().toString());
-            stmt.setInt(3, report.getPatientId());
-            stmt.setString(4, report.getPatientObservation());
-            stmt.setString(5, report.getDoctorObservation());
+            stmt.setString(1, report.getReportDate().toString());
+            stmt.setInt(2, report.getPatientId());
+            stmt.setString(3, report.getPatientObservation());
+            stmt.setString(4, report.getDoctorObservation());
+            stmt.setString(5, parseSymptoms2(report.getSymptoms()));
+            stmt.setString(6,report.getSignalsFilePath());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -152,5 +154,16 @@ public class ReportJDBC implements ReportManager {
         }
 
         return null; // No encontrado
+    }
+    public String parseSymptoms2(List<Symptoms> symptoms){
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < symptoms.size(); i++) {
+            sb.append(symptoms.get(i).name());
+            if (i < symptoms.size() - 1) {
+                sb.append(",");  // Añadir coma excepto en el último
+            }
+        }
+        return sb.toString();
     }
 }
