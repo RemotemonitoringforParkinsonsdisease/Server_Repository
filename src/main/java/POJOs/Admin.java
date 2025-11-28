@@ -4,7 +4,7 @@ public class Admin {
     private Integer adminId;
     private Integer userId;
     private String adminPassword;
-    
+
     public Admin(Integer adminId, Integer userId, String adminPassword) {
         this.adminId = adminId;
         this.userId = userId;
