@@ -44,9 +44,6 @@ public class UI {
         }
 
     }
-    public void startConnection(){
-        //TODO DOOOOOOOOOO
-    }
 
     private void patientPreLoggedMenu() throws IOException {
        int option = connection.getReceiveViaNetwork().receiveInt();
@@ -236,6 +233,7 @@ public class UI {
         Integer patientId = connection.getReceiveViaNetwork().receiveInt();
         List<Report> reports = manager.getReportJDBC().getReportsByPatientId(patientId);
         connection.getSendViaNetwork().sendReports(reports);
+        System.out.println("Reports sent to doctor");
         int option;
         do{
             switch (option = connection.getReceiveViaNetwork().receiveInt()){
@@ -243,6 +241,7 @@ public class UI {
                 case 1:  //Doctor wants to add observation of a patient
                     Integer reportId = connection.getReceiveViaNetwork().receiveInt();
                     String doctorObservation = connection.getReceiveViaNetwork().receiveString();
+                    System.out.println("Adding observation: " + doctorObservation + " to reportId: " + reportId);
                     manager.getReportJDBC().updateDoctorObservation(reportId, doctorObservation);
                     connection.getSendViaNetwork().sendString("ADDED OBSERVATION: " + doctorObservation);
                     break;

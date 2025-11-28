@@ -108,6 +108,15 @@ public class ManagerJDBC {
             );
         """);
 
+            // Crear tabla de admin
+            stmt.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS admin (
+                admin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                admin_password TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
+            );
+        """);
 
             System.out.println("Tablas creadas correctamente o ya verificadas");
 
@@ -130,6 +139,7 @@ public class ManagerJDBC {
     public UserJDBC getUserJDBC() {
         return userJDBC;
     }
+
     public AdminJDBC getAdminJDBC() {
         return adminJDBC;
     }

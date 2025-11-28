@@ -1,5 +1,7 @@
 package ui;
 
+import POJOs.Admin;
+import POJOs.User;
 import jdbcs.ManagerJDBC;
 import utilities.Utilities;
 import java.io.IOException;
@@ -13,10 +15,18 @@ public class Main {
     private static final int PORT = 9000;
     private static boolean running = false;
     private static ServerSocket serverSocket;
+    private static ManagerJDBC jdbcManager;
 
     public static void main(String[] args) {
-        ManagerJDBC jdbcManager = new ManagerJDBC();
-        //adminLoginMenu();
+        jdbcManager = new ManagerJDBC();
+        /*jdbcManager.getUserJDBC().addUser("fernandoMou@gmail.com");
+        Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("fernandoMou@gmail.com");
+        Admin admin = new Admin(userId,"mou1");
+        jdbcManager.getAdminJDBC().addAdmin(admin);
+        System.out.printf("admin added");
+        CADA VEZ QUE LA BASE DE DATOS SE BORRE HAY Q DESCOMENTAR ESTO Y VOLVERLO A CREAR PARA TENER UN ADMIN
+         */
+        adminLoginMenu();
             do{
                 System.out.println("SERVER MENU (PORT: " + PORT + "):");
                 System.out.println("1) Start Server");
@@ -34,10 +44,31 @@ public class Main {
             } while(true);
     }
     private static void adminLoginMenu() {
-        do{
-            String email = Utilities.readString("Enter admin email: ");
-            String password = Utilities.readString("Enter admin password: ");
-            //TODO: comprobar credenciales admin
+        do {
+            String email;
+            boolean valid;
+            do {
+                email = Utilities.readString("Enter admin email: ");
+                valid = Utilities.checkEmail(email);
+            } while (!valid);
+            if (jdbcManager.getUserJDBC().getUserIdByEmail(email) != null ) {
+                Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail(email);
+                if(jdbcManager.getAdminJDBC().getAdminIdByUserId(userId) != null){
+                    Integer adminId = jdbcManager.getAdminJDBC().getAdminIdByUserId(userId);
+                    String password = Utilities.readString("Enter admin password: ");
+                    if (jdbcManager.getAdminJDBC().getPasswordByAdminId(adminId).equals(password)) {
+                        System.out.println("PASSWORD OK");
+                        return;
+                    }
+                    else {
+                        System.out.println("Wrong password");
+                    }
+                }else {
+                    System.out.println("No admin found with that email.");
+                }
+            } else{
+                System.out.println("No user found with that email.");
+            }
         } while(true);
     }
     private static void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
