@@ -122,7 +122,6 @@ public class UI {
         } else{
             connection.getSendViaNetwork().sendString("NO DOCTOR");
         }
-        patientLoggedInMenu(patient);
     }
 
     private void createReport(Patient patient) throws IOException {
