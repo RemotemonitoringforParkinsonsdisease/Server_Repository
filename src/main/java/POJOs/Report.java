@@ -13,23 +13,6 @@ public class Report {
     private String patientObservation;
     private String doctorObservation;
 
-    public Report(Integer reportId, Integer patientId, LocalDate reportDate, String patientObservation) {
-        this.reportId = reportId;
-        this.patientId = patientId;
-        this.reportDate = reportDate;
-        this.patientObservation = patientObservation;
-    }
-
-    public Report(Integer reportId, Integer patientId, LocalDate reportDate, String signalsFilePath, List<Symptoms> symptoms, String patientObservation, String doctorObservation) {
-        this.reportId = reportId;
-        this.patientId = patientId;
-        this.reportDate = reportDate;
-        this.signalsFilePath = signalsFilePath;
-        this.symptoms = symptoms;
-        this.patientObservation = patientObservation;
-        this.doctorObservation = doctorObservation;
-    }
-
     public Report(Integer patientId, LocalDate reportDate, String patientObservation, String doctorObservation, List<Symptoms> symptoms, String signalsFilePath) {
         this.patientId = patientId;
         this.reportDate = reportDate;
@@ -39,13 +22,6 @@ public class Report {
         this.signalsFilePath = signalsFilePath;
     }
 
-    public Report(Integer reportId, Integer patientId, LocalDate reportDate, String patientObservation, String doctorObservation) {
-        this.reportId = reportId;
-        this.patientId = patientId;
-        this.reportDate = reportDate;
-        this.patientObservation = patientObservation;
-        this.doctorObservation = doctorObservation;
-    }
 
     public Integer getReportId() {
         return reportId;
@@ -59,48 +35,20 @@ public class Report {
         return patientId;
     }
 
-    public void setPatientId(Integer patientId) {
-        this.patientId = patientId;
-    }
-
     public LocalDate getReportDate() {
         return reportDate;
-    }
-
-    public void setReportDate(LocalDate reportDate) {
-        this.reportDate = reportDate;
-    }
-
-    public String getSignals() {
-        return signalsFilePath;
-    }
-
-    public void setSignals(String signalsFilePath) {
-        this.signalsFilePath = signalsFilePath;
     }
 
     public List<Symptoms> getSymptoms() {
         return symptoms;
     }
 
-    public void setSymptoms(List<Symptoms> symptoms) {
-        this.symptoms = symptoms;
-    }
-
     public String getPatientObservation() {
         return patientObservation;
     }
 
-    public void setPatientObservation(String patientObservation) {
-        this.patientObservation = patientObservation;
-    }
-
     public String getDoctorObservation() {
         return doctorObservation;
-    }
-
-    public void setDoctorObservation(String doctorObservation) {
-        this.doctorObservation = doctorObservation;
     }
 
     public String getSignalsFilePath() {

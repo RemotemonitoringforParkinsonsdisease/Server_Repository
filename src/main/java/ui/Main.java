@@ -1,7 +1,6 @@
 package ui;
 
 import POJOs.Admin;
-import POJOs.User;
 import jdbcs.ManagerJDBC;
 import utilities.Utilities;
 import java.io.IOException;

@@ -2,17 +2,10 @@ package ui;
 
 import POJOs.*;
 import jdbcs.ManagerJDBC;
-
-
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 
 public class UI {
     private Connection connection;

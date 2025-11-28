@@ -6,7 +6,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,18 +81,6 @@ public class SendDataViaNetwork {
         }
     }
 
-    public void sendLoggedInDoctor(Doctor doctor) {
-        try {
-            sendInt(doctor.getUserId());
-            sendInt(doctor.getDoctorId());
-            sendString(doctor.getFullName());
-            sendString(doctor.getDoctorPassword());
-            sendString(doctor.getDob().toString());
-            sendPatients(doctor.getPatients());
-        } catch (Exception e) {
-            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, "Error sending doctor", e);
-        }
-    }
     public void sendReports(List<Report> reports){
         try{
             if(reports == null){
@@ -127,13 +114,6 @@ public class SendDataViaNetwork {
         dataOutputStream.writeUTF(sb.toString());
     }
 
-    public void releaseResources() {
-        try {
-            dataOutputStream.close();
-        } catch (IOException ex) {
-            Logger.getLogger(SendDataViaNetwork.class.getName()).log(Level.SEVERE, null, ex);
-            }
-    }
 
     public void sendCSVFile (String filePath) throws IOException {
         File file = new File(filePath);

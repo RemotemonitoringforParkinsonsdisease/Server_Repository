@@ -1,7 +1,6 @@
 package POJOs;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 
 public class Doctor{
@@ -12,12 +11,6 @@ public class Doctor{
     private LocalDate dob;
     private List<Patient> patients;
 
-    public Doctor(Integer userId, Integer doctorId, String doctorPassword, LocalDate dob) {
-        this.userId = userId;
-        this.doctorId = doctorId;
-        this.doctorPassword = doctorPassword;
-        this.dob = dob;
-    }
     public Doctor(String fullname, String doctorPassword, LocalDate dob) {
         this.fullName = fullname;
         this.doctorPassword = doctorPassword;
@@ -53,16 +46,8 @@ public class Doctor{
         return doctorPassword;
     }
 
-    public void setDoctorPassword(String doctorPassword) {
-        this.doctorPassword = doctorPassword;
-    }
-
     public LocalDate getDob() {
         return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
     }
 
     public List<Patient> getPatients() {
@@ -75,10 +60,6 @@ public class Doctor{
 
     public String getFullName() {
         return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     @Override

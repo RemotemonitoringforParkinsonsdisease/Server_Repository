@@ -5,7 +5,6 @@ import POJOs.*;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -88,19 +87,6 @@ public class ReceiveDataViaNetwork {
     }
 
 
-    public List<Integer> receiveListOfIntegerValues() throws IOException {
-        List<Integer> values = new ArrayList<>();
-        int numValues = dataInputStream.readInt();
-        if (numValues == 0) {
-            return values;
-        }
-        for (int i = 0; i < numValues; i++) {
-            Integer value = dataInputStream.readInt();
-            values.add(value);
-        }
-        return values;
-    }
-
     public String receiveCSVFile() throws IOException {
 
         String fileName = dataInputStream.readUTF();
@@ -141,16 +127,5 @@ public class ReceiveDataViaNetwork {
             System.err.println("Error al leer el flujo de entrada: " + e.getMessage());
         }
         return symptoms;
-    }
-
-    public void releaseResources() {
-        try {
-            if (dataInputStream != null) {
-                dataInputStream.close();
-            }
-        } catch (IOException e) {
-            System.err.println("Error al liberar los recursos: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 }
