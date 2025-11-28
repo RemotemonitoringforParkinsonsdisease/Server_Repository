@@ -251,18 +251,21 @@ public class UI {
 
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
+        System.out.println(patientEmail);
         do{
             if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
-
+                System.out.println("user exists");
                 Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
 
                 if (manager.getPatientJDBC().getPatientIdByUserId(userId) != null) { //Si existe el paciente
-
+                    System.out.println("Patient exists");
                     Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
                     connection.getSendViaNetwork().sendString("EMAIL OK");
+                    System.out.println("email verified sent");
 
                     String password = connection.getReceiveViaNetwork().receiveString();
                     if (manager.getPatientJDBC().getPasswordByPatientId(patientId).equals(password)) {
+                        System.out.println("PASSWORD OK");
                         connection.getSendViaNetwork().sendString("PASSWORD OK");
                         Patient patient = manager.getPatientJDBC().getPatientByPatientId(patientId);
                         System.out.println(patient.toString());
