@@ -22,12 +22,11 @@ public class Main {
 
 
 
-
-        /*jdbcManager.getUserJDBC().addUser("mou@gmail.com");
-        Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("fernandoMou@gmail.com");
+        jdbcManager.getUserJDBC().addUser("mou@gmail.com");
+        Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("mou@gmail.com");
         Admin admin = new Admin(userId,"mou1");
         jdbcManager.getAdminJDBC().addAdmin(admin);
-        System.out.printf("admin added");*/
+        System.out.printf("admin added");
         //CADA VEZ QUE LA BASE DE DATOS SE BORRE HAY Q DESCOMENTAR ESTO Y VOLVERLO A CREAR PARA TENER UN ADMIN
 
         adminLoginMenu();
