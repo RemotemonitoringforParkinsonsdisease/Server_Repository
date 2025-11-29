@@ -2,6 +2,7 @@ package utilities;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,4 +94,10 @@ public class Utilities {
          *
          * @return A {@code Patient} object containing registered data or {@code null}.
          */
+
+        public static String randomColor(){
+            Random rand = new Random();
+            String[] colorPool = {"\u001B[40m", "\u001B[41m", "\u001B[42m", "\u001B[43m", "\u001B[44m", "\u001B[45m", "\u001B[46m", "\u001B[47m"};
+            return colorPool[rand.nextInt(colorPool.length)];
+        }
 }

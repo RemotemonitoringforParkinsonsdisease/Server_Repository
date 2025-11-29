@@ -2,6 +2,8 @@ package ui;
 
 import POJOs.*;
 import jdbcs.ManagerJDBC;
+import utilities.Utilities;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class UI {
 
     public void run(){
         try{
-            System.out.println(ANSI_RED +"Socket acceptected");
+            System.out.println("Socket acceptected");
             int message = connection.getReceiveViaNetwork().receiveInt();
             if(message == 1){
                 connection.getSendViaNetwork().sendString("PATIENT");
