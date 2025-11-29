@@ -9,7 +9,5 @@ public interface DoctorManager {
     Doctor getDoctorByDoctorId(Integer doctorId);
     Integer getDoctorIdByUserId(Integer userId);
     List<Doctor> readDoctors();
-    Doctor getDoctorByFullName(String fullName);
     String getPasswordByDoctorId(Integer doctorId);
-    Doctor getDoctorByPassword(String password);
 }

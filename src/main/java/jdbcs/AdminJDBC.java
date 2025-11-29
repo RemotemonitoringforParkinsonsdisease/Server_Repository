@@ -1,8 +1,6 @@
 package jdbcs;
 
 import POJOs.Admin;
-import POJOs.Patient;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

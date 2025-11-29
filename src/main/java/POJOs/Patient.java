@@ -2,9 +2,7 @@ package POJOs;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Patient{
     private String fullName;
@@ -68,16 +66,8 @@ public class Patient{
         return patientPassword;
     }
 
-    public void setPatientPassword(String patientPassword) {
-        this.patientPassword = patientPassword;
-    }
-
     public LocalDate getDob() {
         return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
     }
 
     public List<Report> getReports() {
@@ -96,10 +86,6 @@ public class Patient{
 
     public String getFullName() {
         return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     @Override

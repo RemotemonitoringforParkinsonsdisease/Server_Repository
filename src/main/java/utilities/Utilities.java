@@ -2,13 +2,9 @@ package utilities;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.rmi.NotBoundException;
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import POJOs.Patient;
 
 public class Utilities {
 
@@ -45,29 +41,7 @@ public class Utilities {
                 }
             }
         }
-        /**
-         * Reads a date from the user, asking for day, month, and year separately.
-         * Ensures the date is valid and repeats the prompt if the input is not a valid date.
-         *
-         * @param question The prompt to display to the user.
-         * @return A valid LocalDate input by the user.
-         */
-        public static LocalDate readDate(String question)  {
 
-            while (true) {
-                try {
-                    System.out.println(question);
-                    int day = readInteger("   Day: ");
-                    int month = readInteger("   Month: ");
-                    int year = readInteger("   Year: ");
-                    return LocalDate.of(year, month, day);
-
-                } catch (DateTimeException e) {
-                    System.out.println(" ERROR: Introduce a valid date.");
-                }
-
-            }
-        }
         /**
          * Reads a string from the user after displaying a prompt.
          * Ensures that the input is valid and repeats the prompt if an error occurs during reading.
@@ -112,16 +86,6 @@ public class Utilities {
          * @param input The unformatted MAC address string.
          * @return The formatted MAC address string.
          */
-        public static String formatMacAdress(String input) {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < input.length(); i++) {
-                result.append(input.charAt(i));
-                if ((i + 1) % 2 == 0 && i < input.length() - 1) {
-                    result.append(":");
-                }
-            }
-            return result.toString();
-        }
 
         /**
          * Placeholder method for registering patient data.
@@ -129,11 +93,4 @@ public class Utilities {
          *
          * @return A {@code Patient} object containing registered data or {@code null}.
          */
-        public static Patient registerPatientData()
-        {
-            Patient patient = null;
-
-
-            return patient;
-        }
 }
