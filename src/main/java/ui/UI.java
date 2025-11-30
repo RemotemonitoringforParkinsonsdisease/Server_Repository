@@ -9,6 +9,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Server-side controller that manages the interaction with a single client
+ * (patient or doctor application) through a network connection and the database.
+ */
 public class UI {
     private Connection connection;
     private ManagerJDBC manager;
@@ -26,17 +30,15 @@ public class UI {
     }
 
     /**
-     * Receives an initial identifier from the connected client to determine
-     * the type of application
-     * <ul>
-     *    <li>{@code 1} – initializes the Patient Application and opens the patient pre-login menu</li>
-     *    <li>{@code 2} – initializes the Doctor Application and opens the doctor pre-login menu</li>
-     *    <li>any other value – responds with {@code "INVALID"}</li>
-     * </ul>
-     * In all cases, the connection resources are released at the end of the method,
-     * whether the flow finishes normally or an exception is thrown.
+     * Entry point for handling a client session on the server side.
+     * This method receives an initial integer from the client to identify the type of
+     * application. If the value is 1, it initializes the patient application and
+     * opens the patient pre-login menu; if the value is 2, it initializes the doctor
+     * application and opens the doctor pre-login menu; for any other value it sends
+     * the string "INVALID" to the client. When the processing finishes or an
+     * exception is thrown, the connection resources are released in the finally block.
      */
-    public void run(){
+    public void run() {
         try{
             System.out.println("Socket acceptected");
             int message = connection.getReceiveViaNetwork().receiveInt();
@@ -59,15 +61,28 @@ public class UI {
 
     }
 
+    /**
+     * Handles the pre-login menu for the patient application, receiving an option
+     * from the client and redirecting the flow to patient registration, patient
+     * login or application exit.
+     *
+     * @throws IOException if an error occurs while receiving data from the client
+     */
     private void patientPreLoggedMenu() throws IOException {
-       System.out.println("Patient pre logged menu");
-       int option = connection.getReceiveViaNetwork().receiveInt();
-       switch (option){
-           case 1: System.out.println("Registering patient"); registerPatient(); break;
-           case 2: System.out.println("Logging in patient"); logInPatient(); break;
-           case 3: System.out.println("Exiting patient"); exitMenu(); break;
-       }
+        System.out.println("Patient pre logged menu");
+        int option = connection.getReceiveViaNetwork().receiveInt();
+        switch (option){
+            case 1: System.out.println("Registering patient"); registerPatient(); break;
+            case 2: System.out.println("Logging in patient"); logInPatient(); break;
+            case 3: System.out.println("Exiting patient"); exitMenu(); break;
+        }
     }
+
+    /**
+     * Handles the pre-login menu for the doctor application in a loop, receiving
+     * options from the client and redirecting the flow to doctor registration,
+     * doctor login or application exit.
+     */
     private void doctorPreLoggedMenu() {
         do{
             System.out.println("Doctor pre logged menu");
@@ -82,7 +97,14 @@ public class UI {
 
     }
 
-
+    /**
+     * Registers a new patient in the system. It checks whether the email provided
+     * by the client already exists, creates the user record if necessary, assigns
+     * a random available doctor, receives the patient data, stores it in the
+     * database and finally opens the logged-in menu for that patient.
+     *
+     * @throws IOException if an error occurs while sending or receiving data
+     */
     public void registerPatient() throws IOException {
         String email = connection.getReceiveViaNetwork().receiveString(); // email
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
@@ -123,6 +145,15 @@ public class UI {
         System.out.print("Patient registered ");
         patientLoggedInMenu(patient);
     }
+
+    /**
+     * Handles the main menu for a logged-in patient, sending the patient data
+     * to the client and processing the selected options to view patient information,
+     * create a new report or log out and return to the patient pre-login menu.
+     *
+     * @param patient the patient who has just registered or logged in
+     * @throws IOException if an error occurs while sending or receiving data
+     */
     public void patientLoggedInMenu(Patient patient) throws IOException {
         System.out.println(patient.getFullName());
         connection.getSendViaNetwork().sendLoggedPatient(patient);
@@ -138,6 +169,13 @@ public class UI {
         } while (option != 3);
     }
 
+    /**
+     * Sends detailed information about a patient to the client, including the
+     * associated user data and, if available, the full name of the assigned doctor.
+     *
+     * @param patient the patient whose information is requested
+     * @throws IOException if an error occurs while sending data to the client
+     */
     private void seePatientInfo(Patient patient) throws IOException {
         User user = manager.getUserJDBC().getUserById(patient.getUserId());
         connection.getSendViaNetwork().sendUser(user);
@@ -149,6 +187,15 @@ public class UI {
         }
     }
 
+    /**
+     * Creates a new report for the given patient. It receives the report data
+     * from the client, stores it in the database, retrieves the generated report
+     * identifier, associates the report with the patient and notifies the client
+     * that the report has been added.
+     *
+     * @param patient the patient for whom the report is created
+     * @throws IOException if an error occurs while sending or receiving data
+     */
     private void createReport(Patient patient) throws IOException {
         System.out.println("Creating report for patient: " + patient.getFullName());
         Report report = connection.getReceiveViaNetwork().receiveReport();
@@ -159,13 +206,23 @@ public class UI {
         connection.getSendViaNetwork().sendString("REPORT ADDED");
     }
 
+    /**
+     * Closes the application for the current client, releasing the network
+     * resources associated with the connection and signalling that the client
+     * has exited normally.
+     */
     private void exitMenu() {
         System.out.println("Exiting application: " + connection.getSocket().getInetAddress().toString());
         connection.releaseResources();
         throw new RuntimeException("Client exited normally");
     }
 
-
+    /**
+     * Registers a new doctor in the system. It checks whether the email provided
+     * by the client already exists, creates the user record if necessary, receives
+     * the doctor data, stores it in the database, assigns the generated doctor
+     * identifier, initializes the list of patients and confirms the registration.
+     */
     private void registerDoctor() {
         do{
             String email = connection.getReceiveViaNetwork().receiveString(); //
@@ -200,6 +257,13 @@ public class UI {
 
     }
 
+    /**
+     * Manages the login process for a doctor. It receives the email and password
+     * from the client, verifies that the corresponding user and doctor exist,
+     * validates the password and, if correct, loads the doctor and their patients
+     * and opens the logged-in doctor menu. In case of any error, it sends the
+     * appropriate status message to the client and returns.
+     */
     private void loginDoctor() {
         do{
             String doctorEmail = connection.getReceiveViaNetwork().receiveString();
@@ -234,6 +298,14 @@ public class UI {
 
         } while (true);
     }
+
+    /**
+     * Handles the main menu for a logged-in doctor, sending the doctor data to
+     * the client and processing the selected options to log out and return to
+     * the pre-login menu or to open the patient selection and report menu.
+     *
+     * @param doctor the doctor who has successfully logged in
+     */
     private void doctorLoggedInMenu(Doctor doctor) {
         connection.getSendViaNetwork().sendLoggedDoctor(doctor);
         int option;
@@ -244,6 +316,13 @@ public class UI {
             }
         } while(option != 0);
     }
+
+    /**
+     * Manages the doctor view of a specific patient's reports. It receives the
+     * patient identifier from the client, sends the list of reports, and then
+     * processes options to go back or to add a new observation to one of the
+     * reports, updating the database and confirming the change to the client.
+     */
     private void doctorPatientMenu() {
         Integer patientId = connection.getReceiveViaNetwork().receiveInt();
         List<Report> reports = manager.getReportJDBC().getReportsByPatientId(patientId);
@@ -264,6 +343,15 @@ public class UI {
         } while (option != 0);
     }
 
+    /**
+     * Manages the login process for a patient. It receives the email and password
+     * from the client, verifies that the corresponding user and patient exist,
+     * validates the password and, if correct, loads the patient and opens the
+     * logged-in patient menu. In case of error, it sends the appropriate status
+     * message and returns to the patient pre-login menu.
+     *
+     * @throws IOException if an error occurs while sending or receiving data
+     */
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
         do{
