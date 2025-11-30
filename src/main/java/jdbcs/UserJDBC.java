@@ -1,6 +1,7 @@
 package jdbcs;
 
 import POJOs.User;
+import managers.UserManager;
 
 import java.sql.*;
 
@@ -9,7 +10,7 @@ import java.sql.*;
  * and retrieving user records or identifiers by email or id. It uses the
  * shared ManagerJDBC instance to obtain the database connection.
  */
-public class UserJDBC {
+public class UserJDBC implements UserManager {
     private Connection c;
     private ManagerJDBC manager;
 

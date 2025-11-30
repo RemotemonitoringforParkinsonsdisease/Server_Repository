@@ -1,6 +1,8 @@
 package jdbcs;
 
 import POJOs.Admin;
+import managers.AdminManager;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,7 +12,7 @@ import java.sql.SQLException;
  * inserting new admin records and retrieving admin identifiers and passwords.
  * It uses the shared ManagerJDBC instance to obtain the database connection.
  */
-public class AdminJDBC {
+public class AdminJDBC implements AdminManager {
     private ManagerJDBC manager;
 
     /**

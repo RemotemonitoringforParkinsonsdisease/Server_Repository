@@ -4,65 +4,53 @@ import POJOs.Doctor;
 import java.util.List;
 
 /**
- * Defines the operations related to doctor management at a higher level,
- * including adding new doctors, obtaining doctor identifiers, retrieving
- * doctor records and listing all doctors stored in the system.
+ * Contract for all doctor-related database operations.
+ * Defines only the data-access methods required by the business layer.
  */
 public interface DoctorManager {
 
     /**
-     * Adds a new doctor to the system using the data contained in the given
-     * Doctor object. The specific persistence mechanism is defined by the
-     * implementing class.
+     * Inserts a new doctor into the database.
      *
-     * @param doctor the doctor entity that will be stored in the system
+     * @param doctor the doctor to insert
      */
     void addDoctor(Doctor doctor);
 
     /**
-     * Returns the identifier of a randomly selected doctor from all doctors
-     * available in the system. If there are no doctors, the implementing
-     * class may return null or handle the situation in another way.
+     * Returns a random doctor ID from the database.
      *
-     * @return the identifier of a random doctor, or null if no doctor is available
+     * @return the ID of a random doctor, or null if none exist
      */
     Integer getRandomDoctorId();
 
     /**
-     * Retrieves the doctor associated with the given doctor identifier and
-     * returns it as a Doctor object. If no doctor exists with that id, the
-     * implementing class should return null.
+     * Retrieves a doctor by its database identifier.
      *
-     * @param doctorId the identifier of the doctor to be retrieved
-     * @return the Doctor object matching the id, or null if it cannot be found
+     * @param doctorId the doctor ID
+     * @return the matching Doctor, or null if not found
      */
     Doctor getDoctorByDoctorId(Integer doctorId);
 
     /**
-     * Retrieves the doctor identifier associated with a given user identifier.
-     * If there is no doctor linked to that user, the implementing class
-     * should return null.
+     * Retrieves the doctor ID associated with a given user ID.
      *
-     * @param userId the identifier of the user whose doctor id is requested
-     * @return the doctor id for the given user, or null if no doctor is linked
+     * @param userId the user identifier
+     * @return the doctor ID or null if not found
      */
     Integer getDoctorIdByUserId(Integer userId);
 
     /**
-     * Returns a list with all doctors stored in the system. If there are no
-     * doctors, the implementing class should return an empty list rather than null.
+     * Retrieves all doctors stored in the database.
      *
-     * @return a list containing all doctors in the system, possibly empty
+     * @return a list of all doctors (possibly empty)
      */
     List<Doctor> readDoctors();
 
     /**
-     * Retrieves the password associated with the given doctor identifier.
-     * If no doctor exists with that id, the implementing class should
-     * return null.
+     * Retrieves the password for a given doctor ID.
      *
-     * @param doctorId the identifier of the doctor whose password is requested
-     * @return the password of the doctor, or null if it cannot be found
+     * @param doctorId the doctor ID
+     * @return the stored password or null if not found
      */
     String getPasswordByDoctorId(Integer doctorId);
 }
