@@ -106,7 +106,7 @@ public class UI {
      * @throws IOException if an error occurs while sending or receiving data
      */
     public void registerPatient() throws IOException {
-        String email = connection.getReceiveViaNetwork().receiveString(); // email
+        String email = connection.getReceiveViaNetwork().receiveString();
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
             Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
@@ -267,11 +267,11 @@ public class UI {
     private void loginDoctor() {
         do{
             String doctorEmail = connection.getReceiveViaNetwork().receiveString();
-            if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) { //Si existe el usuario
+            if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) {
 
                 Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
 
-                if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){ //Si existe el doctor
+                if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){
 
                     Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
                     connection.getSendViaNetwork().sendString("EMAIL OK");
@@ -311,8 +311,8 @@ public class UI {
         int option;
         do{
             switch(option = connection.getReceiveViaNetwork().receiveInt()){
-                case 0: doctorPreLoggedMenu(); break; //Doctor wants to logOut
-                case 1: doctorPatientMenu(); break; //Doctor wants to see patients
+                case 0: doctorPreLoggedMenu(); break;
+                case 1: doctorPatientMenu(); break;
             }
         } while(option != 0);
     }
@@ -331,8 +331,8 @@ public class UI {
         int option;
         do{
             switch (option = connection.getReceiveViaNetwork().receiveInt()){
-                case 0: return; //Doctor wants to go back (select another patient)
-                case 1:  //Doctor wants to add observation of a patient
+                case 0: return;
+                case 1:
                     Integer reportId = connection.getReceiveViaNetwork().receiveInt();
                     String doctorObservation = connection.getReceiveViaNetwork().receiveString();
                     System.out.println("Adding observation: " + doctorObservation + " to reportId: " + reportId);
@@ -355,10 +355,10 @@ public class UI {
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
         do{
-            if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
+            if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) {
                 Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
 
-                if (manager.getPatientJDBC().getPatientIdByUserId(userId) != null) { //Si existe el paciente
+                if (manager.getPatientJDBC().getPatientIdByUserId(userId) != null) {
                     Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
                     connection.getSendViaNetwork().sendString("EMAIL OK");
                     System.out.println("email verified sent");
