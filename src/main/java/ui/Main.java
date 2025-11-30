@@ -196,17 +196,36 @@ public class Main {
     private static void exitServer() {
         System.exit(0);
     }
+
+    /**
+     * Increments the count of connected clients
+     */
     public static synchronized void incrementClients() {
         clientsCount++;
     }
 
+    /**
+     * Decrements the count of connected clients
+     */
     public static synchronized void decrementClients() {
         clientsCount--;
     }
 
+    /**
+     * Returns the count of connected clients.
+     *
+     * @return the count of connected clients
+     */
     public static synchronized int getConnectedClients() {
         return clientsCount;
     }
+
+    /**
+     * Confirms with the administrator whether to stop the server, showing the
+     * number of currently connected clients.
+     *
+     * @return "0" to return to the menu, "1" to stop the server
+     */
     public static synchronized String confirmExit() {
         System.out.println("There are " + getConnectedClients() + " connected clients. ");
         do{
