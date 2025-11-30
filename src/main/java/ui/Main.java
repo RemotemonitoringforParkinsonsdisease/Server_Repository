@@ -21,6 +21,7 @@ public class Main {
     private static boolean running = false;
     private static ServerSocket serverSocket;
     private static ManagerJDBC jdbcManager;
+    private static int clientsCount = 0;
 
     /**
      * Entry point of the server application. It initializes the database manager,
@@ -49,11 +50,13 @@ public class Main {
             int option = Utilities.readInteger("Select an option: \n");
             switch (option){
                 case 1: startServer(jdbcManager); break;
-                case 2: stopServer(); break;
+                case 2:
+                    confirmExit();
                 case 3:
-                    stopServer();
-                    exitServer();
-                    break;
+                    if(confirmExit().equals("1")){
+                        exitServer();
+                    }
+
                 default: System.out.println("Please introduce a valid option.");
             }
         } while(true);
@@ -117,6 +120,7 @@ public class Main {
             } catch (IOException e) {
                 System.out.println("Error closing socket: " + e.getMessage());
             }
+            decrementClients();
         }
     }
 
@@ -146,7 +150,7 @@ public class Main {
                     try {
                         Socket socket = serverSocket.accept();
                         System.out.println("Client connected.");
-
+                        incrementClients();
                         new Thread(() -> {
                             clientHandler(socket, jdbcManager);
                         }).start();
@@ -191,5 +195,27 @@ public class Main {
      */
     private static void exitServer() {
         System.exit(0);
+    }
+    public static synchronized void incrementClients() {
+        clientsCount++;
+    }
+
+    public static synchronized void decrementClients() {
+        clientsCount--;
+    }
+
+    public static synchronized int getConnectedClients() {
+        return clientsCount;
+    }
+    public static synchronized String confirmExit() {
+        System.out.println("There are " + getConnectedClients() + " connected clients. ");
+        do{
+            String confirm = Utilities.readString("Are you sure you want to stop the server? (0: Return) (1: Close Server): ");
+            switch (confirm){
+                case "0": return confirm;
+                case "1": stopServer(); return confirm;
+                default: System.out.println("Please introduce a valid option."); break;
+            }
+        } while (true);
     }
 }
