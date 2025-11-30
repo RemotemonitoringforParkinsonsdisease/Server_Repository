@@ -2,6 +2,8 @@ package ui;
 
 import POJOs.*;
 import jdbcs.ManagerJDBC;
+import utilities.Utilities;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -10,12 +12,12 @@ import java.util.List;
 public class UI {
     private Connection connection;
     private ManagerJDBC manager;
+    public static final String ANSI_RED = "\u001B[31m";
 
     public UI(Socket socket, ManagerJDBC manager) {
         this.manager = manager;
         this.connection = new Connection(socket);
     }
-
 
     public void run(){
         try{
@@ -23,15 +25,17 @@ public class UI {
             int message = connection.getReceiveViaNetwork().receiveInt();
             if(message == 1){
                 connection.getSendViaNetwork().sendString("PATIENT");
+                System.out.println("Patient app initialized");
                 patientPreLoggedMenu();
             } else if(message == 2){
                 connection.getSendViaNetwork().sendString("DOCTOR");
+                System.out.println("Doctor app initialized");
                 doctorPreLoggedMenu();
             }else {
                 connection.getSendViaNetwork().sendString("INVALID");
             }
         }catch(Exception e){
-            System.out.println("Error during communication: " + e.getMessage());
+            System.out.println(e.getMessage());
         }finally {
             connection.releaseResources();
         }
@@ -39,6 +43,7 @@ public class UI {
     }
 
     private void patientPreLoggedMenu() throws IOException {
+       System.out.println("Patient pre logged menu");
        int option = connection.getReceiveViaNetwork().receiveInt();
        switch (option){
            case 1: System.out.println("Registering patient"); registerPatient(); break;
@@ -48,7 +53,7 @@ public class UI {
     }
     private void doctorPreLoggedMenu() {
         do{
-            System.out.println("Idle");
+            System.out.println("Doctor pre logged menu");
             int option = connection.getReceiveViaNetwork().receiveInt();
             switch (option){
                 case 1: System.out.println("Registering doctor");registerDoctor(); break;
@@ -60,16 +65,14 @@ public class UI {
 
     }
 
-/**/
+
     public void registerPatient() throws IOException {
         String email = connection.getReceiveViaNetwork().receiveString(); // email
         if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
-            System.out.println("User already exists");
             Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
             if(manager.getPatientJDBC().getPatientIdByUserId(userID) != null){
-                System.out.println("Patient already exists");
                 connection.getSendViaNetwork().sendString("EMAIL ERROR");
                 return;
             }else {
@@ -83,25 +86,37 @@ public class UI {
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         Integer doctorId = manager.getDoctorJDBC().getRandomDoctorId();
+        if(doctorId == null){
+            String message = "NO DOCTOR AVAILABLE";
+            connection.getSendViaNetwork().sendString(message);
+            System.out.println(message);
+            return;
+        }
+        else{
+            String message = "DOCTOR ASSIGNED";
+            connection.getSendViaNetwork().sendString(message);
+            System.out.println(message);
+        }
         Patient patient = connection.getReceiveViaNetwork().receiveRegisteredPatient();
         patient.setUserId(userId);
         patient.setDoctorId(doctorId);
-        System.out.println(patient);
         manager.getPatientJDBC().addPatient(patient);
         Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
         patient.setPatientId(patientId);
+        System.out.print("Patient registered ");
         patientLoggedInMenu(patient);
     }
     public void patientLoggedInMenu(Patient patient) throws IOException {
-        System.out.println("estamos en patientLoggedInMenu");
-        System.out.println(patient.getPatientId());
+        System.out.println(patient.getFullName());
         connection.getSendViaNetwork().sendLoggedPatient(patient);
         int option;
         do {
             switch (option = connection.getReceiveViaNetwork().receiveInt()){
                 case 1: seePatientInfo(patient); break;
                 case 2: createReport(patient); break;
-                case 3: this.patientPreLoggedMenu();
+                case 3:
+                    System.out.println("Patient logging out: " + patient.getFullName());
+                    this.patientPreLoggedMenu();
             }
         } while (option != 3);
     }
@@ -111,26 +126,25 @@ public class UI {
         connection.getSendViaNetwork().sendUser(user);
         if(patient.getDoctorId() != null){
             Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(patient.getDoctorId());
-            connection.getSendViaNetwork().sendString(doctor.getFullName()); //SOLO SE MANDA NOMBRE DEL DOCTOR
+            connection.getSendViaNetwork().sendString(doctor.getFullName());
         } else{
             connection.getSendViaNetwork().sendString("NO DOCTOR");
         }
     }
 
     private void createReport(Patient patient) throws IOException {
+        System.out.println("Creating report for patient: " + patient.getFullName());
         Report report = connection.getReceiveViaNetwork().receiveReport();
-        System.out.println(report);
         manager.getReportJDBC().addReport(report);
         report.setReportId(manager.getReportJDBC().getReportIdBySignalFilePath(report.getSignalsFilePath()));
         patient.addReport(report);
+        System.out.println("Report added for patient: " + patient.getFullName());
         connection.getSendViaNetwork().sendString("REPORT ADDED");
     }
 
     private void exitMenu() {
-        // Cerrar la conexión de este cliente
+        System.out.println("Exiting application: " + connection.getSocket().getInetAddress().toString());
         connection.releaseResources();
-
-        // IMPORTANTE: parar el menú de este cliente
         throw new RuntimeException("Client exited normally");
     }
 
@@ -142,11 +156,9 @@ public class UI {
 
             if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
-                System.out.println("User already exists");
                 Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
                 if(manager.getDoctorJDBC().getDoctorIdByUserId(userID) != null){
-                    System.out.println("Doctor already exists");
                     connection.getSendViaNetwork().sendString("EMAIL ERROR");
                     return;
                 } else{
@@ -165,7 +177,7 @@ public class UI {
             Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
             doctor.setDoctorId(doctorId);
             doctor.setPatients(new ArrayList<>());
-            System.out.println("Doctor registered");
+            System.out.println("Doctor registered " + doctor.getFullName());
             return;
         } while(true);
 
@@ -181,30 +193,24 @@ public class UI {
                 if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){ //Si existe el doctor
 
                     Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
-                    System.out.println("EMAIL OK");
                     connection.getSendViaNetwork().sendString("EMAIL OK");
 
                     String password = connection.getReceiveViaNetwork().receiveString();
                     if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
-                        System.out.println("PASSWORD OK");
                         connection.getSendViaNetwork().sendString("PASSWORD OK");
                         Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
                         doctor.setPatients(manager.getPatientJDBC().getPatientsByDoctorId(doctor.getDoctorId()));
-                        System.out.println(doctor.toString());
                         doctorLoggedInMenu(doctor);
 
                     } else{
-                        System.out.println("PASSWORD ERROR");
                         connection.getSendViaNetwork().sendString("PASSWORD ERROR");
                         return;
                     }
                 } else{
-                    System.out.println("NO DOCTOR FOUND");
                     connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
                     return;
                 }
             } else{
-                System.out.println("NO USER FOUND");
                 connection.getSendViaNetwork().sendString("NO USER FOUND");
                 return;
             }
@@ -243,39 +249,32 @@ public class UI {
 
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
-        System.out.println(patientEmail);
         do{
             if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) { //Si existe el usuario
-                System.out.println("user exists");
                 Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
 
                 if (manager.getPatientJDBC().getPatientIdByUserId(userId) != null) { //Si existe el paciente
-                    System.out.println("Patient exists");
                     Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
                     connection.getSendViaNetwork().sendString("EMAIL OK");
                     System.out.println("email verified sent");
 
                     String password = connection.getReceiveViaNetwork().receiveString();
                     if (manager.getPatientJDBC().getPasswordByPatientId(patientId).equals(password)) {
-                        System.out.println("PASSWORD OK");
                         connection.getSendViaNetwork().sendString("PASSWORD OK");
                         Patient patient = manager.getPatientJDBC().getPatientByPatientId(patientId);
-                        System.out.println(patient.toString());
+                        System.out.print("Patient logged in ");
                         patientLoggedInMenu(patient);
 
                     } else {
                         connection.getSendViaNetwork().sendString("PASSWORD ERROR");
-                        System.out.println("PASSWORD ERROR");
                         this.patientPreLoggedMenu();
                     }
                 } else {
                     connection.getSendViaNetwork().sendString("NO PATIENT FOUND");
-                    System.out.println("NO PATIENT FOUND");
                     this.patientPreLoggedMenu();
                 }
             } else {
                 connection.getSendViaNetwork().sendString("NO USER FOUND");
-                System.out.println("NO USER FOUND");
                 this.patientPreLoggedMenu();
             }
         }  while(true);

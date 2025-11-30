@@ -39,6 +39,8 @@ public class Connection {
         return receive;
     }
 
+    public Socket getSocket() { return socket; }
+
     public void releaseResources() {
         try {
             in.close();
