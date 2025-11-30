@@ -12,17 +12,22 @@ public class ManagerJDBC {
     private UserJDBC userJDBC;
     private AdminJDBC adminJDBC;
 
+    /**
+     * Initializes the JDBC manager, loading the SQLite driver, creating the
+     * database folder if it does not exist, opening the database file and
+     * ensuring that all required tables are created. It also constructs the
+     * helper objects for user, doctor, patient, report and admin access.
+     * If any error occurs during initialization, a runtime exception is thrown.
+     */
     public ManagerJDBC() {
         try {
             Class.forName("org.sqlite.JDBC");
 
-            //Create database folder if it does not exist
             File dbDirectory = new File("./database");
             if (!dbDirectory.exists()) {
                 dbDirectory.mkdirs();
             }
 
-            //Create the database only once, not every time we connect
             try (Connection conn = DriverManager.getConnection("jdbc:sqlite:./database/parkinson.db")) {
                 conn.createStatement().execute("PRAGMA foreign_keys = ON");
                 createTables(conn);
@@ -40,6 +45,13 @@ public class ManagerJDBC {
         adminJDBC = new AdminJDBC(this);
     }
 
+    /**
+     * Returns the singleton instance of the JDBC manager. If it has not been
+     * created yet, this method instantiates it before returning it. This
+     * ensures that the database is initialized only once in the application.
+     *
+     * @return the shared ManagerJDBC instance
+     */
     public static synchronized ManagerJDBC getInstance() {
         if (instance == null) {
             instance = new ManagerJDBC();
@@ -47,6 +59,13 @@ public class ManagerJDBC {
         return instance;
     }
 
+    /**
+     * Obtains a new connection to the SQLite database file used by the
+     * application. If the connection cannot be created, a runtime exception
+     * is thrown wrapping the original SQL error.
+     *
+     * @return a new JDBC connection to the Parkinson database
+     */
     public Connection getConnection(){
         try{
             return DriverManager.getConnection("jdbc:sqlite:./database/parkinson.db");
@@ -55,8 +74,14 @@ public class ManagerJDBC {
         }
     }
 
-
-
+    /**
+     * Creates all the database tables required by the application if they do
+     * not already exist. It uses the provided connection to execute the DDL
+     * statements for user, doctor, patient, report and admin tables, enabling
+     * foreign key support beforehand. Any SQL exception is caught and ignored.
+     *
+     * @param conn the open database connection used to create the tables
+     */
     public void createTables(Connection conn) {
         try (Statement stmt = conn.createStatement()) {
 
@@ -124,22 +149,54 @@ public class ManagerJDBC {
 
         }
     }
+
+    /**
+     * Returns the helper object that provides JDBC operations related to
+     * patients, such as inserting and retrieving patient records.
+     *
+     * @return the PatientJDBC helper associated with this manager
+     */
     public PatientJDBC getPatientJDBC() {
         return patientJDBC;
     }
 
+    /**
+     * Returns the helper object that provides JDBC operations related to
+     * doctors, such as inserting and retrieving doctor records.
+     *
+     * @return the DoctorJDBC helper associated with this manager
+     */
     public DoctorJDBC getDoctorJDBC() {
         return doctorJDBC;
     }
 
+    /**
+     * Returns the helper object that provides JDBC operations related to
+     * reports, such as inserting and retrieving clinical report records.
+     *
+     * @return the ReportJDBC helper associated with this manager
+     */
     public ReportJDBC getReportJDBC() {
         return reportJDBC;
     }
 
+    /**
+     * Returns the helper object that provides JDBC operations related to
+     * users, including storing and querying user accounts and their emails.
+     *
+     * @return the UserJDBC helper associated with this manager
+     */
     public UserJDBC getUserJDBC() {
         return userJDBC;
     }
 
+    /**
+     * Returns the helper object that provides JDBC operations related to
+     * administrators, including inserting new admins and retrieving their
+     * identifiers and passwords.
+     *
+     * @return the AdminJDBC helper associated with this manager
+     */
     public AdminJDBC getAdminJDBC() {
         return adminJDBC;
     }
