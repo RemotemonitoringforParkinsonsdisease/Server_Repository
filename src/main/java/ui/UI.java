@@ -14,11 +14,28 @@ public class UI {
     private ManagerJDBC manager;
     public static final String ANSI_RED = "\u001B[31m";
 
+    /**
+     * Creates a new UI instance for handling a client connection on the server.
+     *
+     * @param socket  the socket associated with the connected client
+     * @param manager the JDBC manager used to access the database
+     */
     public UI(Socket socket, ManagerJDBC manager) {
         this.manager = manager;
         this.connection = new Connection(socket);
     }
 
+    /**
+     * Receives an initial identifier from the connected client to determine
+     * the type of application
+     * <ul>
+     *    <li>{@code 1} – initializes the Patient Application and opens the patient pre-login menu</li>
+     *    <li>{@code 2} – initializes the Doctor Application and opens the doctor pre-login menu</li>
+     *    <li>any other value – responds with {@code "INVALID"}</li>
+     * </ul>
+     * In all cases, the connection resources are released at the end of the method,
+     * whether the flow finishes normally or an exception is thrown.
+     */
     public void run(){
         try{
             System.out.println("Socket acceptected");
