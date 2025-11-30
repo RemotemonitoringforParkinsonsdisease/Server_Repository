@@ -9,6 +9,12 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Main entry point for the telemedicine server application. This class manages
+ * the administrator login, shows a simple console menu to start and stop the
+ * server, and listens for incoming client connections, delegating each client
+ * to a UI instance running in its own thread.
+ */
 public class Main {
 
     private static final int PORT = 9000;
@@ -16,10 +22,16 @@ public class Main {
     private static ServerSocket serverSocket;
     private static ManagerJDBC jdbcManager;
 
+    /**
+     * Entry point of the server application. It initializes the database manager,
+     * forces an administrator login through the console, and then repeatedly
+     * shows a menu that allows the admin to start the server, stop it or exit
+     * the application completely.
+     *
+     * @param args program arguments (not used)
+     */
     public static void main(String[] args) {
         jdbcManager = new ManagerJDBC();
-
-
 
         /*jdbcManager.getUserJDBC().addUser("mou@gmail.com");
         Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("mou@gmail.com");
@@ -29,22 +41,31 @@ public class Main {
         //CADA VEZ QUE LA BASE DE DATOS SE BORRE HAY Q DESCOMENTAR ESTO Y VOLVERLO A CREAR PARA TENER UN ADMIN
 
         adminLoginMenu();
-            do{
-                System.out.println("SERVER MENU (PORT: " + PORT + "):");
-                System.out.println("1) Start Server");
-                System.out.println("2) Stop Server");
-                System.out.println("3) Exit");
-                int option = Utilities.readInteger("Select an option: \n");
-                switch (option){
-                    case 1: startServer(jdbcManager); break;
-                    case 2: stopServer(); break;
-                    case 3: stopServer();
-                        exitServer();
-                        break;
-                    default: System.out.println("Please introduce a valid option.");
-                }
-            } while(true);
+        do{
+            System.out.println("SERVER MENU (PORT: " + PORT + "):");
+            System.out.println("1) Start Server");
+            System.out.println("2) Stop Server");
+            System.out.println("3) Exit");
+            int option = Utilities.readInteger("Select an option: \n");
+            switch (option){
+                case 1: startServer(jdbcManager); break;
+                case 2: stopServer(); break;
+                case 3:
+                    stopServer();
+                    exitServer();
+                    break;
+                default: System.out.println("Please introduce a valid option.");
+            }
+        } while(true);
     }
+
+    /**
+     * Manages the administrator login process before the server menu is shown.
+     * This method runs in a loop asking for an email and password, checks that
+     * the email belongs to an existing user with admin privileges and validates
+     * the password in the database, only returning when valid admin credentials
+     * have been provided.
+     */
     private static void adminLoginMenu() {
         do {
             String email;
@@ -73,6 +94,16 @@ public class Main {
             }
         } while(true);
     }
+
+    /**
+     * Handles a single client connection once the server has accepted it.
+     * It creates a UI instance for the connected socket, runs the interaction
+     * with the client, and finally ensures that the socket is closed even if
+     * an error occurs during client handling.
+     *
+     * @param socket      the socket connected to the client
+     * @param jdbcManager the database manager shared with the server
+     */
     private static void clientHandler(Socket socket, ManagerJDBC jdbcManager) {
         System.out.println("Handling new client " + socket.getInetAddress().toString());
         try{
@@ -88,6 +119,17 @@ public class Main {
             }
         }
     }
+
+    /**
+     * Starts the server if it is not already running. This method launches a
+     * background thread that opens a server socket on the configured port and
+     * enters a loop accepting client connections while the running flag is true.
+     * Each accepted client is handled in a separate thread using the clientHandler
+     * method. If the server is already running, it simply prints a message and
+     * returns.
+     *
+     * @param jdbcManager the database manager used by the server and its clients
+     */
     private static void startServer(ManagerJDBC jdbcManager) {
         if(running){
             System.out.println("Server is already running.");
@@ -121,6 +163,13 @@ public class Main {
         });
         serverThread.start();
     }
+
+    /**
+     * Stops the server if it is currently running. It sets the running flag to
+     * false, closes the server socket so that the accept loop can finish, and
+     * prints a message indicating that the server has been stopped. If the
+     * server is already stopped, it prints a message and returns.
+     */
     private static void stopServer() {
         if(!running){
             System.out.println("Server is already stopped.");
@@ -134,8 +183,13 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
         }
     }
+
+    /**
+     * Exits the server application immediately, terminating the Java virtual
+     * machine with a normal status code after any required cleanup has been
+     * performed by the caller.
+     */
     private static void exitServer() {
         System.exit(0);
     }
 }
-
