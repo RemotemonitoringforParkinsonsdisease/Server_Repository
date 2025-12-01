@@ -267,15 +267,11 @@ public class UI {
     private void loginDoctor() {
         do{
             String doctorEmail = connection.getReceiveViaNetwork().receiveString();
-            if (manager.getUserJDBC().getUserByEmail(doctorEmail) != null) {
-
-                Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
-
-                if(manager.getDoctorJDBC().getDoctorIdByUserId(userId) != null){
-
-                    Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+            Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
+            if (userId != null) {
+                Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+                if(doctorId != null){
                     connection.getSendViaNetwork().sendString("EMAIL OK");
-
                     String password = connection.getReceiveViaNetwork().receiveString();
                     if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
                         connection.getSendViaNetwork().sendString("PASSWORD OK");
@@ -355,11 +351,10 @@ public class UI {
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
         do{
-            if (manager.getUserJDBC().getUserByEmail(patientEmail) != null) {
-                Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
-
-                if (manager.getPatientJDBC().getPatientIdByUserId(userId) != null) {
-                    Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
+            Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
+            if (userId != null) {
+                Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
+                if (patientId != null) {
                     connection.getSendViaNetwork().sendString("EMAIL OK");
                     System.out.println("email verified sent");
 
