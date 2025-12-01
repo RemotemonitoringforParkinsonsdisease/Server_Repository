@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class UI {
     private Connection connection;
     private ManagerJDBC manager;
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
+    private static final Logger logger = Logger.getLogger(UI.class.getName());
 
     /**
      * Creates a new UI instance for handling a client connection on the server.
