@@ -56,7 +56,7 @@ public class UI {
                 connection.getSendViaNetwork().sendString("INVALID");
             }
         }catch(Exception e){
-            logger.getLogger(UI.class.getName()).log(Level.WARNING, "" + e.getMessage());
+            logger.getLogger(UI.class.getName()).log(Level.INFO, "" + e.getMessage());
         }finally {
             connection.releaseResources();
         }
@@ -71,7 +71,7 @@ public class UI {
      * @throws IOException if an error occurs while receiving data from the client
      */
     private void patientPreLoggedMenu() throws IOException {
-        logger.getLogger(UI.class.getName()).log(Level.WARNING, "Patient pre logged menu");
+        logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient pre logged menu");
         int option = connection.getReceiveViaNetwork().receiveInt();
         switch (option){
             case 1: logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering patient"); registerPatient(); break;
@@ -87,7 +87,7 @@ public class UI {
      */
     private void doctorPreLoggedMenu() {
         do{
-            logger.getLogger(UI.class.getName()).log(Level.WARNING, "Doctor pre logged menu");
+            logger.getLogger(UI.class.getName()).log(Level.INFO, "Doctor pre logged menu");
             int option = connection.getReceiveViaNetwork().receiveInt();
             switch (option){
                 case 1: logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering doctor");registerDoctor(); break;
