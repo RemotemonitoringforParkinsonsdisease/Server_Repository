@@ -33,6 +33,10 @@ public class Main {
      */
     public static void main(String[] args) {
         jdbcManager = new ManagerJDBC();
+        System.out.println("ººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº");
+        System.out.println(" > The Parkinson telemonitoring database has been initialized successfully <");
+        System.out.println("ººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº");
+
 
         //EVERY TIME THE DATABASE IS DELETED YOU HAVE TO UNCOMMENT THIS AND RECREATE IT TO HAVE AN ADMIN AGAIN
         /*
@@ -44,55 +48,53 @@ public class Main {
         */
 
         adminLoginMenu();
-
         do {
             System.out.println("""
-               ╔════════════════════════════════════════╗
-               ║              SERVER MENU               ║
-               ║                                        ║
-                ║     Manage server runtime options      ║
-                ╚════════════════════════════════════════╝
-                """);
-                System.out.println("-> PORT: " + PORT);
-                System.out.println("""
-                ----------------------------------------------
-                1) Start Server
-                2) Stop Server
-                3) Exit Application
-                ----------------------------------------------
-                """);
-
-                switch (option) {
-                    case 1:
-                        System.out.println("""
+            ╔════════════════════════════════════════╗
+            ║           ADMIN-SERVER MENU            ║
+            ║                                        ║
+            ║     Manage server runtime options      ║
+            ╚════════════════════════════════════════╝
+            """);
+            System.out.println("-> PORT: " + PORT);
+            System.out.println("""
             ----------------------------------------------
-            ▶️ Starting server...
+            1) Start Server
+            2) Stop Server
+            3) Exit Application
             ----------------------------------------------
             """);
-                        startServer(jdbcManager);
-                        break;
 
-                    case 2:
-                        System.out.println("""
-            ----------------------------------------------
-            🛑 Stop server requested
-            ----------------------------------------------
-            """);
-                        confirmExit(); // Asumimos que este método maneja internamente la respuesta
-                        break;
+            int option = Utilities.readInteger("-> Select an option: ");
+            switch (option) {
+                case 1:
+                    System.out.println("""
+                    ----------------------------------------------
+                    -> Starting server...
+                    ----------------------------------------------
+                    """);
+                    startServer(jdbcManager);
+                    break;
+                case 2:
+                    System.out.println("""
+                    ----------------------------------------------
+                    -> Stop server requested
+                    ----------------------------------------------
+                    """);
+                    confirmExit();
+                    break;
+                case 3:
+                    if (confirmExit().equals("1")) {
+                        exitServer();
+                    }
+                    break;
 
-                    case 3:
-                        if (confirmExit().equals("1")) {
-                            exitServer();
-                        }
-                        break;
-
-                    default:
-                        System.out.println("""
-            ❌ Invalid option. Please try again.
-            ----------------------------------------------
-            """);
-                }
+                default:
+                    System.out.println("""
+                    Invalid option. Please try again.
+                    ----------------------------------------------
+                    """);
+            }
         } while(true);
     }
 
@@ -195,7 +197,6 @@ public class Main {
         Thread serverThread = new Thread(() -> {
             try {
                 serverSocket = new ServerSocket(PORT);
-                System.out.println("-> Server started on port: " + PORT);
 
                 while (running) {
                     try {

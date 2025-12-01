@@ -32,9 +32,6 @@ public class ManagerJDBC {
                 conn.createStatement().execute("PRAGMA foreign_keys = ON");
                 createTables(conn);
             }
-
-            System.out.println("Parkinson database correctly initialized\n");
-
         } catch (Exception e) {
             throw new RuntimeException("Error initializing DB", e);
         }
@@ -142,11 +139,7 @@ public class ManagerJDBC {
                 FOREIGN KEY (user_id) REFERENCES user(user_id)
             );
         """);
-
-            System.out.println("Tablas creadas correctamente o ya verificadas");
-
         } catch (SQLException e) {
-
         }
     }
 
