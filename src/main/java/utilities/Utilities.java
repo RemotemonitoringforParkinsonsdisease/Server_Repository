@@ -77,7 +77,8 @@ public class Utilities {
             if (mather.find()) {
                 return true;
             } else {
-                System.out.println("Please follow the email format: example@example.com");
+                System.out.println("-> Please follow the email format: example@example.com");
+                System.out.println("----------------------------------------------");
                 return false;
             }
         }

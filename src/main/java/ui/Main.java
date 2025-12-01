@@ -34,31 +34,65 @@ public class Main {
     public static void main(String[] args) {
         jdbcManager = new ManagerJDBC();
 
-        /*jdbcManager.getUserJDBC().addUser("mou@gmail.com");
+        //EVERY TIME THE DATABASE IS DELETED YOU HAVE TO UNCOMMENT THIS AND RECREATE IT TO HAVE AN ADMIN AGAIN
+        /*
+        jdbcManager.getUserJDBC().addUser("mou@gmail.com");
         Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("mou@gmail.com");
         Admin admin = new Admin(userId,"mou1");
         jdbcManager.getAdminJDBC().addAdmin(admin);
-        System.out.printf("admin added");*/
-        //CADA VEZ QUE LA BASE DE DATOS SE BORRE HAY Q DESCOMENTAR ESTO Y VOLVERLO A CREAR PARA TENER UN ADMIN
+        System.out.printf("admin added");
+        */
 
         adminLoginMenu();
-        do{
-            System.out.println("SERVER MENU (PORT: " + PORT + "):");
-            System.out.println("1) Start Server");
-            System.out.println("2) Stop Server");
-            System.out.println("3) Exit");
-            int option = Utilities.readInteger("Select an option: \n");
-            switch (option){
-                case 1: startServer(jdbcManager); break;
-                case 2:
-                    confirmExit();
-                case 3:
-                    if(confirmExit().equals("1")){
-                        exitServer();
-                    }
 
-                default: System.out.println("Please introduce a valid option.");
-            }
+        do {
+            System.out.println("""
+               ╔════════════════════════════════════════╗
+               ║              SERVER MENU               ║
+               ║                                        ║
+                ║     Manage server runtime options      ║
+                ╚════════════════════════════════════════╝
+                """);
+                System.out.println("-> PORT: " + PORT);
+                System.out.println("""
+                ----------------------------------------------
+                1) Start Server
+                2) Stop Server
+                3) Exit Application
+                ----------------------------------------------
+                """);
+
+                switch (option) {
+                    case 1:
+                        System.out.println("""
+            ----------------------------------------------
+            ▶️ Starting server...
+            ----------------------------------------------
+            """);
+                        startServer(jdbcManager);
+                        break;
+
+                    case 2:
+                        System.out.println("""
+            ----------------------------------------------
+            🛑 Stop server requested
+            ----------------------------------------------
+            """);
+                        confirmExit(); // Asumimos que este método maneja internamente la respuesta
+                        break;
+
+                    case 3:
+                        if (confirmExit().equals("1")) {
+                            exitServer();
+                        }
+                        break;
+
+                    default:
+                        System.out.println("""
+            ❌ Invalid option. Please try again.
+            ----------------------------------------------
+            """);
+                }
         } while(true);
     }
 
@@ -71,31 +105,48 @@ public class Main {
      */
     private static void adminLoginMenu() {
         do {
+            System.out.println("""
+                    ╔════════════════════════════════════════╗
+                    ║           ADMIN LOGIN PORTAL           ║
+                    ║                                        ║
+                    ║    Please enter your credentials!      ║
+                    ╚════════════════════════════════════════╝
+                    """);
+
             String email;
             boolean valid;
             do {
-                email = Utilities.readString("Enter admin email: ");
+                email = Utilities.readString("-> Enter the admin email: ");
                 valid = Utilities.checkEmail(email);
             } while (!valid);
-            if (jdbcManager.getUserJDBC().getUserIdByEmail(email) != null ) {
-                Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail(email);
-                if(jdbcManager.getAdminJDBC().getAdminIdByUserId(userId) != null){
-                    Integer adminId = jdbcManager.getAdminJDBC().getAdminIdByUserId(userId);
-                    String password = Utilities.readString("Enter admin password: ");
-                    if (jdbcManager.getAdminJDBC().getPasswordByAdminId(adminId).equals(password)) {
-                        System.out.println("PASSWORD OK");
-                        return;
-                    }
-                    else {
-                        System.out.println("Wrong password");
-                    }
-                }else {
-                    System.out.println("No admin found with that email.");
-                }
-            } else{
-                System.out.println("No user found with that email.");
+
+            Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail(email);
+            if (userId == null) {
+                System.out.println("-> No user found for email: " + email);
+                System.out.println("----------------------------------------------");
+                continue;
             }
-        } while(true);
+
+            Integer adminId = jdbcManager.getAdminJDBC().getAdminIdByUserId(userId);
+            if (adminId == null) {
+                System.out.println("-> No admin account associated with this email! ");
+                System.out.println("----------------------------------------------");
+                continue;
+            }
+
+            String password = Utilities.readString("-> Enter admin password: ");
+            if (jdbcManager.getAdminJDBC().getPasswordByAdminId(adminId).equals(password)) {
+                System.out.println("""
+                ╔════════════════════════════════════════╗
+                ║            LOGIN SUCCESSFUL!           ║
+                ╚════════════════════════════════════════╝
+                """);
+                return;
+            } else {
+                System.out.println("-> Incorrect password! ");
+                System.out.println("----------------------------------------------");
+            }
+        }while (true);
     }
 
     /**
@@ -136,20 +187,20 @@ public class Main {
      */
     private static void startServer(ManagerJDBC jdbcManager) {
         if(running){
-            System.out.println("Server is already running.");
+            System.out.println("-> Server is already running! ");
             return;
         }
         running = true;
-        System.out.println("Server started");
+        System.out.println("-> Server started! Waiting for connection...");
         Thread serverThread = new Thread(() -> {
             try {
                 serverSocket = new ServerSocket(PORT);
-                System.out.println("Server started on port " + PORT);
+                System.out.println("-> Server started on port: " + PORT);
 
                 while (running) {
                     try {
                         Socket socket = serverSocket.accept();
-                        System.out.println("Client connected.");
+                        System.out.println("-> Client " + socket.getInetAddress() + ", connected! ");
                         incrementClients();
                         new Thread(() -> {
                             clientHandler(socket, jdbcManager);
@@ -157,7 +208,7 @@ public class Main {
 
                     } catch (IOException e) {
                         if (running) {
-                            System.out.println("Error accepting client: " + e.getMessage());
+                            System.out.println("-> Error accepting client: " + e.getMessage());
                         }
                     }
                 }
@@ -176,13 +227,13 @@ public class Main {
      */
     private static void stopServer() {
         if(!running){
-            System.out.println("Server is already stopped.");
+            System.out.println("-> Server is already stopped! ");
             return;
         }
         try{
             running = false;
             serverSocket.close();
-            System.out.println("Server stopped");
+            System.out.println("-> Server stopped! ");
         } catch (IOException e) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -227,13 +278,13 @@ public class Main {
      * @return "0" to return to the menu, "1" to stop the server
      */
     public static synchronized String confirmExit() {
-        System.out.println("There are " + getConnectedClients() + " connected clients. ");
+        System.out.println("-> There are " + getConnectedClients() + " connected clients! ");
         do{
-            String confirm = Utilities.readString("Are you sure you want to stop the server? (0: Return) (1: Close Server): ");
+            String confirm = Utilities.readString("-> ¿Are you sure you want to stop the server? (0: Return) (1: Close Server): ");
             switch (confirm){
                 case "0": return confirm;
                 case "1": stopServer(); return confirm;
-                default: System.out.println("Please introduce a valid option."); break;
+                default: System.out.println("-> Please introduce a valid option! "); break;
             }
         } while (true);
     }
