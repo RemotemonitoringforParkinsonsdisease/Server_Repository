@@ -37,7 +37,7 @@ public class UI {
      * opens the patient pre-login menu; if the value is 2, it initializes the doctor
      * application and opens the doctor pre-login menu; for any other value it sends
      * the string "INVALID" to the client. When the processing finishes or an
-     * exception is thrown, the connection resources are released in the finally block.
+     * exception is thrown, the connection resources are released in the block.
      */
     public void run() {
         try{
