@@ -33,10 +33,9 @@ public class Main {
      */
     public static void main(String[] args) {
         jdbcManager = new ManagerJDBC();
-        System.out.println("ººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº");
+        System.out.println("·················································································");
         System.out.println(" > The Parkinson telemonitoring database has been initialized successfully <");
-        System.out.println("ººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº");
-
+        System.out.println("·················································································");
 
         //EVERY TIME THE DATABASE IS DELETED YOU HAVE TO UNCOMMENT THIS AND RECREATE IT TO HAVE AN ADMIN AGAIN
         /*
@@ -48,6 +47,15 @@ public class Main {
         */
 
         adminLoginMenu();
+        adminServerMenu();
+    }
+
+    /**
+     * Displays the administrator server menu and handles server control actions.
+     * Allows the admin to start the server, stop it, or exit the application.
+     * The menu runs in a loop and only exits when the admin confirms termination.
+     */
+    private static void adminServerMenu() {
         do {
             System.out.println("""
             ╔════════════════════════════════════════╗
