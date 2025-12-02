@@ -40,24 +40,24 @@ public class UI {
      * exception is thrown, the connection resources are released in the block.
      */
     public void run() {
-        try{
+        try {
             logger.getLogger(UI.class.getName()).log(Level.INFO, "Socket acceptected");
             int message = connection.getReceiveViaNetwork().receiveInt();
-            if(message == 1){
+            if (message == 1) {
                 connection.getSendViaNetwork().sendString("PATIENT");
                 logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient app initialized");
                 patientPreLoggedMenu();
-            } else if(message == 2){
+            } else if (message == 2) {
                 connection.getSendViaNetwork().sendString("DOCTOR");
                 logger.getLogger(UI.class.getName()).log(Level.INFO, "Doctor app initialized");
 
                 doctorPreLoggedMenu();
-            }else {
+            } else {
                 connection.getSendViaNetwork().sendString("INVALID");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.getLogger(UI.class.getName()).log(Level.INFO, "" + e.getMessage());
-        }finally {
+        } finally {
             connection.releaseResources();
         }
 
@@ -73,26 +73,45 @@ public class UI {
     private void patientPreLoggedMenu() throws IOException {
         logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient pre logged menu");
         int option = connection.getReceiveViaNetwork().receiveInt();
-        switch (option){
-            case 1: logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering patient"); registerPatient(); break;
-            case 2: logger.getLogger(UI.class.getName()).log(Level.INFO, "Logging in patient"); logInPatient(); break;
-            case 3: logger.getLogger(UI.class.getName()).log(Level.INFO, "Exiting patient"); exitMenu(); break;
+        switch (option) {
+            case 1:
+                logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering patient");
+                registerPatient();
+                break;
+            case 2:
+                logger.getLogger(UI.class.getName()).log(Level.INFO, "Logging in patient");
+                logInPatient();
+                break;
+            case 3:
+                logger.getLogger(UI.class.getName()).log(Level.INFO, "Exiting patient");
+                exitMenu();
+                break;
         }
     }
 //
+
     /**
      * Handles the pre-login menu for the doctor application in a loop, receiving
      * options from the client and redirecting the flow to doctor registration,
      * doctor login or application exit.
      */
     private void doctorPreLoggedMenu() {
-        do{
+        do {
             logger.getLogger(UI.class.getName()).log(Level.INFO, "Doctor pre logged menu");
             int option = connection.getReceiveViaNetwork().receiveInt();
-            switch (option){
-                case 1: logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering doctor");registerDoctor(); break;
-                case 2: logger.getLogger(UI.class.getName()).log(Level.INFO, "Loggin in doctor");loginDoctor(); break;
-                case 3: logger.getLogger(UI.class.getName()).log(Level.INFO, "Exiting doctor");exitMenu(); break;
+            switch (option) {
+                case 1:
+                    logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering doctor");
+                    registerDoctor();
+                    break;
+                case 2:
+                    logger.getLogger(UI.class.getName()).log(Level.INFO, "Loggin in doctor");
+                    loginDoctor();
+                    break;
+                case 3:
+                    logger.getLogger(UI.class.getName()).log(Level.INFO, "Exiting doctor");
+                    exitMenu();
+                    break;
             }
 
         } while (true);
@@ -113,14 +132,14 @@ public class UI {
 
             Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
-            if(manager.getPatientJDBC().getPatientIdByUserId(userID) != null){
+            if (manager.getPatientJDBC().getPatientIdByUserId(userID) != null) {
                 connection.getSendViaNetwork().sendString("EMAIL ERROR");
                 return;
-            }else {
+            } else {
                 logger.getLogger(UI.class.getName()).log(Level.INFO, "Email: " + email + " is OK");
                 connection.getSendViaNetwork().sendString("EMAIL OK");
             }
-        } else{
+        } else {
             logger.getLogger(UI.class.getName()).log(Level.INFO, "Email: " + email + " is OK");
             manager.getUserJDBC().addUser(email);
             connection.getSendViaNetwork().sendString("EMAIL OK");
@@ -128,13 +147,12 @@ public class UI {
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
         Integer doctorCheckId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
         Integer doctorId = manager.getDoctorJDBC().getRandomDoctorId(doctorCheckId);
-        if(doctorId == null){
+        if (doctorId == null) {
             String message = "NO DOCTOR AVAILABLE";
             connection.getSendViaNetwork().sendString(message);
             logger.getLogger(UI.class.getName()).log(Level.WARNING, "NO DOCTOR AVAILABLE");
             return;
-        }
-        else{
+        } else {
             String message = "DOCTOR ASSIGNED";
             connection.getSendViaNetwork().sendString(message);
             logger.getLogger(UI.class.getName()).log(Level.INFO, "DOCTOR ASSIGNED");
@@ -145,7 +163,7 @@ public class UI {
         manager.getPatientJDBC().addPatient(patient);
         Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
         patient.setPatientId(patientId);
-        logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient registered " +patient.getFullName());
+        logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient registered " + patient.getFullName());
         patientLoggedInMenu(patient);
     }
 
@@ -161,9 +179,13 @@ public class UI {
         connection.getSendViaNetwork().sendLoggedPatient(patient);
         int option;
         do {
-            switch (option = connection.getReceiveViaNetwork().receiveInt()){
-                case 1: seePatientInfo(patient); break;
-                case 2: createReport(patient); break;
+            switch (option = connection.getReceiveViaNetwork().receiveInt()) {
+                case 1:
+                    seePatientInfo(patient);
+                    break;
+                case 2:
+                    createReport(patient);
+                    break;
                 case 3:
                     logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient logging out: " + patient.getFullName());
                     this.patientPreLoggedMenu();
@@ -181,10 +203,10 @@ public class UI {
     private void seePatientInfo(Patient patient) throws IOException {
         User user = manager.getUserJDBC().getUserById(patient.getUserId());
         connection.getSendViaNetwork().sendUser(user);
-        if(patient.getDoctorId() != null){
+        if (patient.getDoctorId() != null) {
             Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(patient.getDoctorId());
             connection.getSendViaNetwork().sendString(doctor.getFullName());
-        } else{
+        } else {
             connection.getSendViaNetwork().sendString("NO DOCTOR");
         }
     }
@@ -226,20 +248,20 @@ public class UI {
      * identifier, initializes the list of patients and confirms the registration.
      */
     private void registerDoctor() {
-        do{
+        do {
             String email = connection.getReceiveViaNetwork().receiveString();
-            logger.getLogger(UI.class.getName()).log(Level.INFO, "" +email);
+            logger.getLogger(UI.class.getName()).log(Level.INFO, "" + email);
             if (manager.getUserJDBC().getUserByEmail(email) != null) {
 
                 Integer userID = manager.getUserJDBC().getUserIdByEmail(email);
 
-                if(manager.getDoctorJDBC().getDoctorIdByUserId(userID) != null){
+                if (manager.getDoctorJDBC().getDoctorIdByUserId(userID) != null) {
                     connection.getSendViaNetwork().sendString("EMAIL ERROR");
                     return;
-                } else{
+                } else {
                     connection.getSendViaNetwork().sendString("EMAIL OK");
                 }
-            } else{
+            } else {
                 logger.getLogger(UI.class.getName()).log(Level.INFO, "Email: " + email + " is OK");
                 manager.getUserJDBC().addUser(email);
                 String message = "EMAIL OK";
@@ -254,7 +276,7 @@ public class UI {
             doctor.setPatients(new ArrayList<>());
             logger.getLogger(UI.class.getName()).log(Level.INFO, "Doctor registered " + doctor.getFullName());
             return;
-        } while(true);
+        } while (true);
 
     }
 
@@ -266,29 +288,29 @@ public class UI {
      * appropriate status message to the client and returns.
      */
     private void loginDoctor() {
-        do{
+        do {
             String doctorEmail = connection.getReceiveViaNetwork().receiveString();
             Integer userId = manager.getUserJDBC().getUserIdByEmail(doctorEmail);
             if (userId != null) {
                 Integer doctorId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
-                if(doctorId != null){
+                if (doctorId != null) {
                     connection.getSendViaNetwork().sendString("EMAIL OK");
                     String password = connection.getReceiveViaNetwork().receiveString();
-                    if(manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)){
+                    if (manager.getDoctorJDBC().getPasswordByDoctorId(doctorId).equals(password)) {
                         connection.getSendViaNetwork().sendString("PASSWORD OK");
                         Doctor doctor = manager.getDoctorJDBC().getDoctorByDoctorId(doctorId);
                         doctor.setPatients(manager.getPatientJDBC().getPatientsByDoctorId(doctor.getDoctorId()));
                         doctorLoggedInMenu(doctor);
 
-                    } else{
+                    } else {
                         connection.getSendViaNetwork().sendString("PASSWORD ERROR");
                         return;
                     }
-                } else{
+                } else {
                     connection.getSendViaNetwork().sendString("NO DOCTOR FOUND");
                     return;
                 }
-            } else{
+            } else {
                 connection.getSendViaNetwork().sendString("NO USER FOUND");
                 return;
             }
@@ -306,12 +328,16 @@ public class UI {
     private void doctorLoggedInMenu(Doctor doctor) {
         connection.getSendViaNetwork().sendLoggedDoctor(doctor);
         int option;
-        do{
-            switch(option = connection.getReceiveViaNetwork().receiveInt()){
-                case 0: doctorPreLoggedMenu(); break;
-                case 1: doctorPatientMenu(); break;
+        do {
+            switch (option = connection.getReceiveViaNetwork().receiveInt()) {
+                case 0:
+                    doctorPreLoggedMenu();
+                    break;
+                case 1:
+                    doctorPatientMenu();
+                    break;
             }
-        } while(option != 0);
+        } while (option != 0);
     }
 
     /**
@@ -326,9 +352,10 @@ public class UI {
         connection.getSendViaNetwork().sendReports(reports);
         logger.getLogger(UI.class.getName()).log(Level.INFO, "Reports sent to doctor");
         int option;
-        do{
-            switch (option = connection.getReceiveViaNetwork().receiveInt()){
-                case 0: return;
+        do {
+            switch (option = connection.getReceiveViaNetwork().receiveInt()) {
+                case 0:
+                    return;
                 case 1:
                     Integer reportId = connection.getReceiveViaNetwork().receiveInt();
                     String doctorObservation = connection.getReceiveViaNetwork().receiveString();
@@ -351,7 +378,7 @@ public class UI {
      */
     private void logInPatient() throws IOException {
         String patientEmail = connection.getReceiveViaNetwork().receiveString();
-        do{
+        do {
             Integer userId = manager.getUserJDBC().getUserIdByEmail(patientEmail);
             if (userId != null) {
                 Integer patientId = manager.getPatientJDBC().getPatientIdByUserId(userId);
@@ -377,17 +404,6 @@ public class UI {
                 connection.getSendViaNetwork().sendString("NO USER FOUND");
                 this.patientPreLoggedMenu();
             }
-        }  while(true);
+        } while (true);
     }
-//TODO JAVADOC
-    /*static {
-        try {
-            FileHandler fh = new FileHandler("server.log", true);
-            fh.setFormatter(new SimpleFormatter());
-            logger.addHandler(fh);
-            logger.setLevel(Level.INFO);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Could not initialize log file", e);
-        }
-    }*/
 }
