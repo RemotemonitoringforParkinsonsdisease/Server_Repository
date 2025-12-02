@@ -31,3 +31,9 @@ Before downloading the github repository locally, make sure you have the followi
 All the information on how to use the application step by step is available in the application manual document provided.
 
 [Download Server Application Manual](https://github.com/RemotemonitoringforParkinsonsdisease/Server_Repository/blob/master/documentation/Server%20manual.pdf)
+
+To run the server, you will need to use the following username and password:
+
+* Username: *admin@gmail.com*
+
+* Password: *admin1*
