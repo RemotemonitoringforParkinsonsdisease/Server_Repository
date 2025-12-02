@@ -71,24 +71,26 @@ public class UI {
      * @throws IOException if an error occurs while receiving data from the client
      */
     private void patientPreLoggedMenu() throws IOException {
-        logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient pre logged menu");
-        int option = connection.getReceiveViaNetwork().receiveInt();
-        switch (option) {
-            case 1:
-                logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering patient");
-                registerPatient();
-                break;
-            case 2:
-                logger.getLogger(UI.class.getName()).log(Level.INFO, "Logging in patient");
-                logInPatient();
-                break;
-            case 3:
-                logger.getLogger(UI.class.getName()).log(Level.INFO, "Exiting patient");
-                exitMenu();
-                break;
-        }
+        do {
+            logger.getLogger(UI.class.getName()).log(Level.INFO, "Patient pre logged menu");
+            int option = connection.getReceiveViaNetwork().receiveInt();
+            switch (option) {
+                case 1:
+                    logger.getLogger(UI.class.getName()).log(Level.INFO, "Registering patient");
+                    registerPatient();
+                    break;
+                case 2:
+                    logger.getLogger(UI.class.getName()).log(Level.INFO, "Logging in patient");
+                    logInPatient();
+                    break;
+                case 3:
+                    logger.getLogger(UI.class.getName()).log(Level.INFO, "Exiting patient");
+                    exitMenu();
+                    break;
+            }
+        }while(true);
     }
-//
+
 
     /**
      * Handles the pre-login menu for the doctor application in a loop, receiving
