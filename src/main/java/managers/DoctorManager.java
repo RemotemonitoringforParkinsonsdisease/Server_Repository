@@ -21,7 +21,7 @@ public interface DoctorManager {
      *
      * @return the ID of a random doctor, or null if none exist
      */
-    Integer getRandomDoctorId();
+    Integer getRandomDoctorId(Integer userId);
 
     /**
      * Retrieves a doctor by its database identifier.

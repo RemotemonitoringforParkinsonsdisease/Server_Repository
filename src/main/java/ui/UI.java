@@ -126,7 +126,8 @@ public class UI {
             connection.getSendViaNetwork().sendString("EMAIL OK");
         }
         Integer userId = manager.getUserJDBC().getUserIdByEmail(email);
-        Integer doctorId = manager.getDoctorJDBC().getRandomDoctorId();
+        Integer doctorCheckId = manager.getDoctorJDBC().getDoctorIdByUserId(userId);
+        Integer doctorId = manager.getDoctorJDBC().getRandomDoctorId(doctorCheckId);
         if(doctorId == null){
             String message = "NO DOCTOR AVAILABLE";
             connection.getSendViaNetwork().sendString(message);

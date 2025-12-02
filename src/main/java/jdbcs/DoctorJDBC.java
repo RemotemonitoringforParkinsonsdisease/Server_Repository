@@ -58,13 +58,16 @@ public class DoctorJDBC implements DoctorManager {
      *
      * @return the identifier of a random doctor, or null if no doctors are found
      */
-    public Integer getRandomDoctorId() {
-        List<Doctor> doctors = this.readDoctors(); // Metodo para obtener todos los doctores
+    public Integer getRandomDoctorId(Integer doctorCheckId) {
+        List<Doctor> doctors = this.readDoctors();
+        if(doctors.contains(doctorCheckId)){
+            doctors.remove(doctorCheckId);
+        }
         if (doctors != null && !doctors.isEmpty()) {
             Random rand = new Random();
-            return doctors.get(rand.nextInt(doctors.size())).getDoctorId(); // Devuelve un doctor aleatorio
+            return doctors.get(rand.nextInt(doctors.size())).getDoctorId();
         }
-        return null; // Si no hay doctores, retorna null
+        return null;
     }
 
     /**
