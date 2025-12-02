@@ -20,11 +20,23 @@ Before downloading the github repository locally, make sure you have the followi
 
 ## **Installation:**
 
+### In case you want to run the project throught Intelij:
+
   1. Clone the repository locally
 
   2. Build the project by: mvn clean install
 
-  3. Run the _Main_ class 
+  3. Run the _Main_ class
+
+### In case you only want to execute from the terminal:
+
+  1. Download the _Server_Rep_jar_ folder located in the _out_ folder path
+
+  2. Before running the app make sure you have the folders _database_ with the actual database inside and the folder _Server_files_ with all the prerecorded sigals
+
+  3. Now through your terminal use _cd_ and _ls_ commands to navigate throught your directories until you reach _Server_Rep.jar_ file
+
+  4. Finally run the application using the command: java -jar Server_Rep.jar
 
 ## **Application guide:**
 
@@ -37,3 +49,4 @@ To run the server, you will need to use the following username and password:
 * Username: *admin@gmail.com*
 
 * Password: *admin1*
+
