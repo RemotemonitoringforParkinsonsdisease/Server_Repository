@@ -38,13 +38,13 @@ public class Main {
         System.out.println("·················································································");
 
         //EVERY TIME THE DATABASE IS DELETED YOU HAVE TO UNCOMMENT THIS AND RECREATE IT TO HAVE AN ADMIN AGAIN
-        /*
-        jdbcManager.getUserJDBC().addUser("mou@gmail.com");
-        Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("mou@gmail.com");
-        Admin admin = new Admin(userId,"mou1");
+
+        /*jdbcManager.getUserJDBC().addUser("admin@gmail.com");
+        Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("admin@gmail.com");
+        Admin admin = new Admin(userId,"admin1");
         jdbcManager.getAdminJDBC().addAdmin(admin);
-        System.out.printf("admin added");
-        */
+        System.out.printf("admin added");*/
+
 
         adminLoginMenu();
         adminServerMenu();
