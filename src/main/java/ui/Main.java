@@ -39,11 +39,11 @@ public class Main {
 
         //EVERY TIME THE DATABASE IS DELETED YOU HAVE TO UNCOMMENT THIS AND RECREATE IT TO HAVE AN ADMIN AGAIN
 
-        /*jdbcManager.getUserJDBC().addUser("admin@gmail.com");
+        jdbcManager.getUserJDBC().addUser("admin@gmail.com");
         Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("admin@gmail.com");
         Admin admin = new Admin(userId,"admin1");
         jdbcManager.getAdminJDBC().addAdmin(admin);
-        System.out.printf("admin added");*/
+        System.out.printf("admin added");
 
 
         adminLoginMenu();
