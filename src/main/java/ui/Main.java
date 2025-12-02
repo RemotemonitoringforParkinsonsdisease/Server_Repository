@@ -43,7 +43,7 @@ public class Main {
         Integer userId = jdbcManager.getUserJDBC().getUserIdByEmail("admin@gmail.com");
         Admin admin = new Admin(userId,"admin1");
         jdbcManager.getAdminJDBC().addAdmin(admin);
-        System.out.printf("admin added");*/
+        System.out.printf("admin added");*/
 
         adminLoginMenu();
         adminServerMenu();
