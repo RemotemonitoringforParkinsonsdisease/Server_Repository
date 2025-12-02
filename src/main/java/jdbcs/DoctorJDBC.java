@@ -60,8 +60,11 @@ public class DoctorJDBC implements DoctorManager {
      */
     public Integer getRandomDoctorId(Integer doctorCheckId) {
         List<Doctor> doctors = this.readDoctors();
-        if(doctors.contains(doctorCheckId)){
-            doctors.remove(doctorCheckId);
+        for (int i = 0; i < doctors.size(); i++) {
+            if (doctors.get(i).getDoctorId().equals(doctorCheckId)) {
+                doctors.remove(i);
+                break;
+            }
         }
         if (doctors != null && !doctors.isEmpty()) {
             Random rand = new Random();
