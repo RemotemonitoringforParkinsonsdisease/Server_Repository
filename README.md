@@ -13,7 +13,7 @@ Before downloading the github repository locally, make sure you have the followi
 #### **Dependencies:**
 
 * org.xerial:sqlite-jdbc:3.45.1.0 — SQLite JDBC driver
-* 
+  
 * org.slf4j:slf4j-simple:1.7.36 — SLF4J simple logger
 
 
